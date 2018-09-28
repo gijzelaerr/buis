@@ -1,0 +1,3 @@
+wes-service
+toil[all]
+django
