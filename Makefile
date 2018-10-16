@@ -1,5 +1,5 @@
 
-.PHONY: wes-server wes-client django-server django-migrate setup
+.PHONY: wes-server wes-client django-server django-migrate setup django-test celery-worker
 
 all: django-server
 
