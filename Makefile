@@ -3,15 +3,14 @@
 
 all: django-server
 
-requirements.txt:
-
-.venv/: requirements.txt
+.venv/:
 	virtualenv -p python3 .venv/
 
-.venv/bin/wes-server: .venv/
+.venv/installed: .venv/ requirements.txt
 	.venv/bin/pip install -r requirements.txt
+	touch .venv/installed
 
-setup: .venv/bin/wes-server
+setup: .venv/installed
 
 wes-server: setup
 	.venv/bin/wes-server --backend=wes_service.cwl_runner --opt runner=cwltoil --opt extra=--logLevel=CRITICAL
@@ -27,5 +26,11 @@ django-migrate: setup
 
 django-makemigrations: setup
 	.venv/bin/python ./manage.py makemigrations
+
+django-test: setup
+	.venv/bin/python ./manage.py test scheduler
+
+celery-worker: setup
+	.venv/bin/celery -A buis worker -l info
 
 

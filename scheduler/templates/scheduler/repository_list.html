@@ -5,6 +5,8 @@
     <ul>
         {% for object in object_list %}
             <li>{{ object.url }}</li>
+        {% empty %}
+            "No repositories are available."
         {% endfor %}
     </ul>
 {% endblock %}

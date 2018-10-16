@@ -1,10 +1,16 @@
 from django.views import generic
 from .models import Repository
+from django.views.generic.edit import CreateView
 
 
-class IndexView(generic.ListView):
+class RepositoryIndex(generic.ListView):
     model = Repository
 
 
-class DetailView(generic.DetailView):
+class RepositoryDetail(generic.DetailView):
     model = Repository
+
+
+class RepositoryCreate(CreateView):
+    model = Repository
+    fields = ['url']

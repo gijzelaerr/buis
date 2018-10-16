@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'scheduler',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -121,3 +122,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 GIT_DIR = os.path.join(BASE_DIR, 'gitscratch')
+
+CELERY_RESULT_BACKEND = 'django-db'
