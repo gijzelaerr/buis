@@ -20,9 +20,12 @@ wes-client: setup
 	 .venv/bin/wes-client --proto http --host=localhost:8080 --list
 
 django-server: setup
-	.venv/bin/python buis/manage.py runserver
+	.venv/bin/python ./manage.py runserver
 
 django-migrate: setup
-	.venv/bin/python buis/manage.py migrate
+	.venv/bin/python ./manage.py migrate
+
+django-makemigrations: setup
+	.venv/bin/python ./manage.py makemigrations
 
 

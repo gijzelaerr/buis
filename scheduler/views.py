@@ -1,5 +1,10 @@
-from django.http import HttpResponse
+from django.views import generic
+from .models import Repository
 
 
-def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+class IndexView(generic.ListView):
+    model = Repository
+
+
+class DetailView(generic.DetailView):
+    model = Repository

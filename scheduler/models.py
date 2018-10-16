@@ -17,3 +17,6 @@ class Repository(models.Model):
     url = models.CharField(max_length=2083)
 
     state = models.CharField(max_length=2, choices=STATE_CHOICES, default=ADDED)
+
+    def __str__(self):
+        return self.url
