@@ -6,5 +6,6 @@ app_name = 'scheduler'
 urlpatterns = [
     path('', views.RepositoryIndex.as_view(), name='index'),
     path('<int:pk>/', views.RepositoryDetail.as_view(), name='detail'),
-    path('create/', views.RepositoryCreate.as_view(), name='create')
+    path('create/', views.RepositoryCreate.as_view(), name='create'),
+    path('api/repository/', views.RepositoryListCreate.as_view() ),
 ]

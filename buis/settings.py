@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'scheduler',
     'django_celery_results',
+    'rest_framework',
+    'frontend',
 ]
 
 MIDDLEWARE = [

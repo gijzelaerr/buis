@@ -27,6 +27,9 @@ django-migrate: setup
 django-makemigrations: setup
 	.venv/bin/python ./manage.py makemigrations
 
+django-loaddata: setup
+	.venv/bin/python ./manage.py loaddata repositories
+
 django-test: setup
 	.venv/bin/python ./manage.py test scheduler
 

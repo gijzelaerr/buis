@@ -1,0 +1,18 @@
+[
+    {
+        "model": "scheduler.repository",
+        "pk": 1,
+        "fields": {
+            "url": "https://github.com/gijzelaerr/spiel/",
+            "state": "RE"
+        }
+    },
+    {
+        "model": "scheduler.repository",
+        "pk": 2,
+        "fields": {
+          "url": "https://github.com/EOSC-LOFAR/prefactor-cwl",
+          "state": "AD"
+        }
+    }
+]

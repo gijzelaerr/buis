@@ -3,3 +3,4 @@ toil[cwl]
 django>=2.1,<2.2
 celery>=4.2,<4.3
 django-celery-results
+djangorestframework
