@@ -1,3 +1,8 @@
+Buis
+====
+
+A webfrontend for toil
+
 
 Requirements
 ============
@@ -16,3 +21,8 @@ on debian/ubuntu:
 ```
 $ sudo apt-get install rabbitmq-server python3 virtualenv
 ```
+
+Development
+===========
+
+[![Build Status](https://travis-ci.org/gijzelaerr/buis.svg?branch=master)](https://travis-ci.org/gijzelaerr/buis)
