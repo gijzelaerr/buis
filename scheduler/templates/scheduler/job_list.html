@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Workflows</h2>
+    <ul>
+        {% for object in workflows %}
+            <li>{{ object }}</li>
+        {% empty %}
+            No workflows are running.
+        {% endfor %}
+    </ul>
+{% endblock %}

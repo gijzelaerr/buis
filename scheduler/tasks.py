@@ -1,23 +1,41 @@
-# Create your tasks here
-from __future__ import absolute_import, unicode_literals
+import logging
 from celery import shared_task
+import git
+from scheduler.models import Repository
 
-from buis.settings import GIT_DIR
-
-
-@shared_task
-def add(x, y):
-    return x + y
+logger = logging.getLogger(__name__)
 
 
 @shared_task
-def mul(x, y):
-    return x * y
+def checkout(pk, branch='master'):
+    logger.info(f"checking out repo for repository {pk}")
+    db_repo = Repository.objects.get(pk=pk)
+    db_repo.state = db_repo.UPDATING
+    db_repo.save()
+    try:
+        logger.info(f"cloning repository {pk} from {db_repo.url} on branch {branch}")
+        disk_repo = db_repo.clone(branch=branch)
+    except git.exc.GitCommandError as e:
+        logger.error(f"cloning repository {pk} failed: {e}")
+        db_repo.state = db_repo.ERROR
+        db_repo.save()
+    else:
+        logger.info("checking out repository {pk} successful")
+        db_repo.state = db_repo.READY
+        db_repo.save()
 
 
 @shared_task
-def xsum(numbers):
-    return sum(numbers)
-
-def checkout(repository_id):
-    pass
+def update(pk):
+    db_repo = Repository.objects.get(pk=pk)
+    db_repo.state = db_repo.UPDATING
+    db_repo.save()
+    try:
+        db_repo.pull()
+    except git.exc.GitCommandError as e:
+        logger.error(f"cloning repository {pk} failed: {e}")
+        db_repo.state = db_repo.ERROR
+        db_repo.save()
+    else:
+        db_repo.state = db_repo.READY
+        db_repo.save()

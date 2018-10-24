@@ -1,12 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Repositories</h2>
-    <ul>
-        {% for object in object_list %}
-            <li>{{ object.url }}</li>
-        {% empty %}
-            "No repositories are available."
-        {% endfor %}
-    </ul>
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h2>Repositories</h2>
+        <div class="btn-toolbar mb-2 mb-md-0">
+            <div class="btn-group mr-2">
+                <button type="button" class="btn btn-primary">Add repository</button>
+            </div>
+        </div>
+    </div>
+
+    {% if object_list %}
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                <th scole="col">#</th>
+                <th scope="col">url</th>
+                <th scope="col">actions</th>
+                </thead>
+                <tbody>
+                {% for object in object_list %}
+                    <tr>
+                        <th scope="row">{{ object.id }}</th>
+                        <td>{{ object.url }}</td>
+                        <td>
+                            <button type="button" class="btn btn-danger">Delete</button>
+                            <button type="button" class="btn btn-info">Update</button>
+                            <button type="button" class="btn btn-success">Run</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        No repositories are available.
+    {% endif %}
+
 {% endblock %}

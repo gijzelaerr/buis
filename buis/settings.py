@@ -126,3 +126,7 @@ STATIC_URL = '/static/'
 GIT_DIR = os.path.join(BASE_DIR, 'gitscratch')
 
 CELERY_RESULT_BACKEND = 'django-db'
+
+WES_AUTH = None
+WES_PROTO = 'http'
+WES_HOST = 'localhost:8080'
