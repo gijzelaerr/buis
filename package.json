@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack --mode development ./frontend/src/index.js --output ./frontend/static/frontend/main.js",
-    "build": "webpack --mode production ./frontend/src/index.js --output ./frontend/static/frontend/main.js"
+    "build": "webpack --mode production ./frontend/src/index.js --output ./frontend/static/frontend/main.js",
+    "flush": ".venv/bin/python ./manage.py flush --no-input",
+    "cypress": "cypress open --project ./frontend/"
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,7 @@
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.4",
     "babel-plugin-transform-class-properties": "^6.24.1",
+    "cypress": "^3.1.0",
     "prop-types": "^15.6.2",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",

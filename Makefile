@@ -1,5 +1,5 @@
 
-.PHONY: wes-server wes-client django-server django-migrate setup django-test celery-worker
+.PHONY: wes-server wes-client django-server django-migrate setup django-test celery-worker npm-rundev docker npm-cypress
 
 all: django-server
 
@@ -31,9 +31,19 @@ django-loaddata: setup
 	.venv/bin/python ./manage.py loaddata repositories
 
 django-test: setup
-	.venv/bin/python ./manage.py test scheduler
+	.venv/bin/python ./manage.py test
 
 celery-worker: setup
 	.venv/bin/celery -A buis worker -l info
 
+node_modules/:
+	npm update
 
+npm-rundev: node_modules/
+	npm run dev
+
+npm-cypress: node_modules/
+	npm run cypress
+
+docker:
+	docker build . -t gijzelaerr/buis
