@@ -26,7 +26,7 @@ $ brew services start rabbitmq
 
 on debian/ubuntu:
 ```
-$ sudo apt-get install rabbitmq-server python3 virtualenv npm
+$ sudo apt-get install rabbitmq-server python3 virtualenv npm  python3-dev
 ```
 
 Or have a look at the `Dockerfile`.
