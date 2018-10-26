@@ -13,10 +13,14 @@ all: django-server
 setup: .venv/installed
 
 wes-server: setup
-	.venv/bin/wes-server --backend=wes_service.cwl_runner --opt runner=cwltoil --opt extra=--logLevel=CRITICAL
+	.venv/bin/wes-server --backend=wes_service.cwl_runner --opt runner=$(CURDIR)/.venv/bin/cwltoil \
+		--opt extra=--logLevel=CRITICAL
 
-wes-client: setup
+wes-list: setup
 	 .venv/bin/wes-client --proto http --host=localhost:8080 --list
+
+wes-submit: setup
+	.venv/bin/wes-client --host=localhost:8080 --proto=http --attachments=testdata/sleep.cwl testdata/sleep.cwl testdata/sleep.json
 
 django-server: setup
 	.venv/bin/python ./manage.py runserver

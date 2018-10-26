@@ -29,8 +29,11 @@ class RepositoryListCreate(ListCreateAPIView):
 
 
 def job_list(request):
-    client = WESClient(service={'auth': settings.WES_AUTH, 'proto': settings.WES_PROTO, 'host': settings.WES_HOST})
+    client = WESClient(service={'auth': settings.WES_AUTH,
+                                'proto': settings.WES_PROTO,
+                                'host': settings.WES_HOST})
     try:
+        service_info = client.get_service_info()
         context = client.list_runs()
     except ConnectionError as e:
         return HttpResponseServerError(e)
@@ -38,3 +41,14 @@ def job_list(request):
         return render(request, 'scheduler/job_list.html', context)
 
 
+def job_detail(request):
+    client = WESClient(service={'auth': settings.WES_AUTH,
+                                'proto': settings.WES_PROTO,
+                                'host': settings.WES_HOST})
+    try:
+        run_status = client.get_run_status()
+        run_status = client.get_run_log()
+    except ConnectionError as e:
+        return HttpResponseServerError(e)
+    else:
+        return render(request, 'scheduler/job_list.html', context)
