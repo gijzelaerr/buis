@@ -56,6 +56,7 @@ DATABASES = {
     }
 }
 
+STATIC_ROOT = path.join(BASE_DIR, 'static')
 
 AUTH_PASSWORD_VALIDATORS = [
     {
