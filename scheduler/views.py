@@ -1,5 +1,6 @@
-import logging
-from django.views.generic import ListView, DetailView
+from logging import getLogger
+from os import listdir, path
+from django.views.generic import ListView, DetailView, DeleteView
 from .models import Repository
 from .serializers import RepositorySerializer
 from django.views.generic.edit import CreateView
@@ -8,10 +9,11 @@ from wes_client.util import WESClient
 from django.conf import settings
 from requests.exceptions import ConnectionError
 from django.http import HttpResponseServerError
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class RepositoryIndex(ListView):
@@ -21,10 +23,20 @@ class RepositoryIndex(ListView):
 class RepositoryDetail(DetailView):
     model = Repository
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['ls'] = listdir(self.object.path())
+        return context
+
 
 class RepositoryCreate(CreateView):
     model = Repository
     fields = ['url']
+
+
+class RepositoryDelete(DeleteView):
+    model = Repository
+    success_url = reverse_lazy('scheduler:repo_list')
 
 
 class RepositoryListCreate(ListCreateAPIView):
@@ -32,7 +44,24 @@ class RepositoryListCreate(ListCreateAPIView):
     serializer_class = RepositorySerializer
 
 
-def job_list(request):
+def workflow_run(request, repo_id, cwl_path):
+    client = WESClient(service={'auth': settings.WES_AUTH,
+                                'proto': settings.WES_PROTO,
+                                'host': settings.WES_HOST})
+
+    repo = Repository.objects.get(pk=repo_id)
+
+    full_cwl_path = path.abspath(path.join(repo.path(), cwl_path))
+    assert(full_cwl_path.startswith(repo.path()))
+    try:
+        client.run(full_cwl_path, '{}', [])
+    except (ConnectionError, Exception) as e:
+        logger.critical(str(e))
+        return HttpResponseServerError(e)
+    return redirect('scheduler:workflow_list')
+
+
+def workflow_list(request):
     client = WESClient(service={'auth': settings.WES_AUTH,
                                 'proto': settings.WES_PROTO,
                                 'host': settings.WES_HOST})
@@ -40,13 +69,13 @@ def job_list(request):
         service_info = client.get_service_info()
         context = client.list_runs()
     except ConnectionError as e:
-        return HttpResponseServerError(e)
         logger.critical(str(e))
+        return HttpResponseServerError(e)
     else:
-        return render(request, 'scheduler/job_list.html', context)
+        return render(request, 'scheduler/workflow_list.html', context)
 
 
-def job_detail(request, run_id):
+def workflow_detail(request, run_id):
     client = WESClient(service={'auth': settings.WES_AUTH,
                                 'proto': settings.WES_PROTO,
                                 'host': settings.WES_HOST})
@@ -54,6 +83,27 @@ def job_detail(request, run_id):
         run_log = client.get_run_log(run_id)
         context = {'run_log': run_log}
     except ConnectionError as e:
+        logger.critical(str(e))
         return HttpResponseServerError(e)
     else:
-        return render(request, 'scheduler/job_detail.html', context)
+        return render(request, 'scheduler/workflow_detail.html', context)
+
+
+def workflow_delete(request, run_id):
+
+    client = WESClient(service={'auth': settings.WES_AUTH,
+                                'proto': settings.WES_PROTO,
+                                'host': settings.WES_HOST})
+    try:
+        context = client.get_run_status(run_id)
+    except ConnectionError as e:
+        logger.critical(str(e))
+        return HttpResponseServerError(e)
+
+    if request.method == 'POST':
+        logger.info("canceling workflow {}".format(run_id))
+        client.cancel(run_id)
+        return redirect('scheduler:workflow_list')
+    else:
+        return render(request, 'scheduler/workflow_confirm_delete.html', context)
+

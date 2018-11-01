@@ -92,3 +92,21 @@ CELERY_RESULT_BACKEND = 'django-db'
 WES_AUTH = None
 WES_PROTO = 'http'
 WES_HOST = 'localhost:8080'
+
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}

@@ -16,8 +16,11 @@ class Repository(models.Model):
     def __str__(self):
         return self.url
 
+    def path(self):
+        return path.join(settings.GIT_DIR, str(self.pk))
+
     def _get_disk_repo(self):
-        return git.Repo(path.join(settings.GIT_DIR, str(self.pk)))
+        return git.Repo(self.path)
 
     def active_branch(self):
         return self._get_disk_repo().active_branch

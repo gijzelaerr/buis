@@ -23,11 +23,10 @@
                 {% for object in object_list %}
                     <tr>
                         <th scope="row">{{ object.id }}</th>
-                        <td>{{ object.url }}</td>
+                        <td><a href="{%  url 'scheduler:repo_detail' object.id %}">{{ object.url }}</a></td>
                         <td>
-                            <button type="button" class="btn btn-danger">Delete</button>
-                            <button type="button" class="btn btn-info">Update</button>
-                            <button type="button" class="btn btn-success">Run</button>
+                            <a href="{%  url 'scheduler:repo_delete' object.id %}"><button type="button" class="btn btn-danger">Delete</button></a>
+                            <a href=""><button type="button" class="btn btn-info">Update</button></a>
                         </td>
                     </tr>
                 {% endfor %}

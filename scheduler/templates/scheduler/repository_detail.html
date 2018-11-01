@@ -1,8 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <h2>Repository #{{ object.id }} details</h2>
+
     <ul>
         <li>name: {{ object.name }}</li>
         <li>url: {{ object.url }}</li>
     </ul>
+
+    {% if ls %}
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                <th scope="col">file</th>
+                <th scope="col">actions</th>
+                </thead>
+                <tbody>
+                {% for file in ls %}
+                    <tr>
+
+                        <td>{{ file }}</td>
+                        <td><a href="{%  url 'scheduler:workflow_run' object.id file %}"><button type="button" class="btn btn-success">Run</button></a></td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        No Workflows.
+    {% endif %}
+
+
 {% endblock %}

@@ -9,13 +9,15 @@
                 <thead>
                 <th scope="col">run id</th>
                 <th scope="col">state</th>
+                <th scope="col">actions</th>
                 </thead>
                 <tbody>
                 {% for object in workflows %}
                     <tr>
 
-                        <td><a href="{% url 'scheduler:job_detail' run_id=object.run_id %}">{{ object.run_id }}</a></td>
+                        <td><a href="{% url 'scheduler:workflow_detail' run_id=object.run_id %}">{{ object.run_id }}</a></td>
                         <td>{{ object.state }}</td>
+                        <td><a href="{% url 'scheduler:workflow_delete' object.run_id %}"><button type="button" class="btn btn-danger btn-sm">Delete</button></td></a></td>
                     </tr>
                 {% endfor %}
                 </tbody>

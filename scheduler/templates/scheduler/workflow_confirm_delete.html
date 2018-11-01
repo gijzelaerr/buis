@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h2>Delete {{  run_id }}</h2>
+
+    Are you sure you want to delete {{ run_id }} in state {{ state }}?
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary btn-sm">Yes</button>
+    </form>
+
+    <a href="{% url 'scheduler:workflow_list' %}"><button type="button" class="btn btn-secondary btn-sm">No</button></a>
+
+
+{% endblock %}
