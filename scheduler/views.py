@@ -1,3 +1,4 @@
+import logging
 from django.views.generic import ListView, DetailView
 from .models import Repository
 from .serializers import RepositorySerializer
@@ -8,6 +9,9 @@ from django.conf import settings
 from requests.exceptions import ConnectionError
 from django.http import HttpResponseServerError
 from django.shortcuts import render
+
+
+logger = logging.getLogger(__name__)
 
 
 class RepositoryIndex(ListView):
@@ -37,18 +41,19 @@ def job_list(request):
         context = client.list_runs()
     except ConnectionError as e:
         return HttpResponseServerError(e)
+        logger.critical(str(e))
     else:
         return render(request, 'scheduler/job_list.html', context)
 
 
-def job_detail(request):
+def job_detail(request, run_id):
     client = WESClient(service={'auth': settings.WES_AUTH,
                                 'proto': settings.WES_PROTO,
                                 'host': settings.WES_HOST})
     try:
-        run_status = client.get_run_status()
-        run_status = client.get_run_log()
+        run_log = client.get_run_log(run_id)
+        context = {'run_log': run_log}
     except ConnectionError as e:
         return HttpResponseServerError(e)
     else:
-        return render(request, 'scheduler/job_list.html', context)
+        return render(request, 'scheduler/job_detail.html', context)

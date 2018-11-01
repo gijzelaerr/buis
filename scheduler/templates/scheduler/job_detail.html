@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Workflow details</h2>
+
+{% if run_log %}
+<div class="table-responsive">
+    <table class="table table-striped table-sm">
+        <thead>
+        <th scope="col">key</th>
+        <th scope="col">value</th>
+        </thead>
+        <tbody>
+        {% for key, value in run_log.items %}
+            <tr>
+
+                <td>{{ key }}</td>
+                <td>{{ value }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+No Workflows.
+{% endif %}
+
+
+{% endblock %}

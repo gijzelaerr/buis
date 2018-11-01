@@ -2,11 +2,27 @@
 
 {% block content %}
     <h2>Workflows</h2>
-    <ul>
-        {% for object in workflows %}
-            <li>{{ object }}</li>
-        {% empty %}
-            No workflows are running.
-        {% endfor %}
-    </ul>
+
+      {% if workflows %}
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                <th scope="col">run id</th>
+                <th scope="col">state</th>
+                </thead>
+                <tbody>
+                {% for object in workflows %}
+                    <tr>
+
+                        <td><a href="{% url 'scheduler:job_detail' run_id=object.run_id %}">{{ object.run_id }}</a></td>
+                        <td>{{ object.state }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        No Workflows.
+    {% endif %}
+
 {% endblock %}
