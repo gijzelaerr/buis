@@ -10,6 +10,7 @@ urlpatterns = [
     path('<int:pk>/', views.RepositoryDetail.as_view(), name='repo_detail'),
     path('create/', views.RepositoryCreate.as_view(), name='repo_create'),
     path('delete/<int:pk>/', views.RepositoryDelete.as_view(), name='repo_delete'),
+    path('update/<int:repo_id>/', views.repository_update, name='repo_update'),
 
     path('api/repository/', views.RepositoryListCreate.as_view()),
 

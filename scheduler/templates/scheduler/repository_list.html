@@ -6,7 +6,7 @@
         <h2>Repositories</h2>
         <div class="btn-toolbar mb-2 mb-md-0">
             <div class="btn-group mr-2">
-                <button type="button" class="btn btn-primary">Add repository</button>
+                <a href="{% url 'scheduler:repo_create' %}"><button type="button" class="btn btn-primary">Add repository</button></a>
             </div>
         </div>
     </div>
@@ -17,6 +17,7 @@
                 <thead>
                 <th scole="col">#</th>
                 <th scope="col">url</th>
+                <th scope="col">state</th>
                 <th scope="col">actions</th>
                 </thead>
                 <tbody>
@@ -24,6 +25,7 @@
                     <tr>
                         <th scope="row">{{ object.id }}</th>
                         <td><a href="{%  url 'scheduler:repo_detail' object.id %}">{{ object.url }}</a></td>
+                        <td>{{ object.get_state }}</td>
                         <td>
                             <a href="{%  url 'scheduler:repo_delete' object.id %}"><button type="button" class="btn btn-danger">Delete</button></a>
                             <a href=""><button type="button" class="btn btn-info">Update</button></a>

@@ -11,6 +11,7 @@ from requests.exceptions import ConnectionError
 from django.http import HttpResponseServerError
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from .tasks import update, checkout
 
 
 logger = getLogger(__name__)
@@ -32,6 +33,7 @@ class RepositoryDetail(DetailView):
 class RepositoryCreate(CreateView):
     model = Repository
     fields = ['url']
+    success_url = reverse_lazy('scheduler:repo_list')
 
 
 class RepositoryDelete(DeleteView):
@@ -42,6 +44,12 @@ class RepositoryDelete(DeleteView):
 class RepositoryListCreate(ListCreateAPIView):
     queryset = Repository.objects.all()
     serializer_class = RepositorySerializer
+
+
+def repository_update(repo_id):
+    repo = Repository.objects.get(pk=repo_id)
+    update.delay(pk=repo_id)
+    return redirect('scheduler:repo_detail', repo_id)
 
 
 def workflow_run(request, repo_id, cwl_path):
