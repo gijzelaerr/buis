@@ -11,7 +11,9 @@ from requests.exceptions import ConnectionError
 from django.http import HttpResponseServerError
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from .tasks import update
+from .tasks import update, checkout
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 
 logger = getLogger(__name__)
 
@@ -24,20 +26,31 @@ def get_cwl_files(prefix):
                 yield path.join(subfolder, f)
 
 
-class RepositoryIndex(ListView):
+class RepositoryDelete(LoginRequiredMixin, DeleteView):
+    model = Repository
+    success_url = reverse_lazy('scheduler:repo_list')
+
+
+class RepositoryListCreate(LoginRequiredMixin, ListCreateAPIView):
+    queryset = Repository.objects.all()
+    serializer_class = RepositorySerializer
+
+
+class RepositoryIndex(LoginRequiredMixin, ListView):
     model = Repository
 
 
-class RepositoryDetail(DetailView):
+class RepositoryDetail(LoginRequiredMixin, DetailView):
     model = Repository
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['ls'] = listdir(self.object.path())
+        context['cwl_files'] = get_cwl_files(self.object.path())
         return context
 
 
-class RepositoryCreate(CreateView):
+class RepositoryCreate(LoginRequiredMixin, CreateView):
     model = Repository
     fields = ['url']
     success_url = reverse_lazy('scheduler:repo_list')
@@ -46,19 +59,11 @@ class RepositoryCreate(CreateView):
         response = super().form_valid(form)
         rsc = RepositoryStateChange(repository=self.object, state=RepositoryStateChange.ADDED)
         rsc.save()
+        checkout.delay(pk=self.object.id)
         return response
 
 
-class RepositoryDelete(DeleteView):
-    model = Repository
-    success_url = reverse_lazy('scheduler:repo_list')
-
-
-class RepositoryListCreate(ListCreateAPIView):
-    queryset = Repository.objects.all()
-    serializer_class = RepositorySerializer
-
-
+@login_required
 def repository_update(request, pk):
     repo = Repository.objects.get(pk=pk)
     repo.set_state(RepositoryStateChange.OUTDATED)
@@ -67,13 +72,15 @@ def repository_update(request, pk):
     return redirect('scheduler:repo_list')
 
 
+@login_required
 def workflow_run(request, repo_id, cwl_path):
     client = WESClient(service={'auth': settings.WES_AUTH,
                                 'proto': settings.WES_PROTO,
                                 'host': settings.WES_HOST})
 
     repo = Repository.objects.get(pk=repo_id)
-    full_cwl_path = path.abspath(path.join(repo.path(), cwl_path))
+    from urllib.parse import unquote
+    full_cwl_path = path.abspath(path.join(repo.path(), unquote(cwl_path)))
     assert(full_cwl_path.startswith(repo.path()))
     try:
         response = client.run(full_cwl_path, '{}', [])
@@ -85,6 +92,7 @@ def workflow_run(request, repo_id, cwl_path):
     return redirect('scheduler:workflow_list')
 
 
+@login_required
 def workflow_list(request):
     client = WESClient(service={'auth': settings.WES_AUTH,
                                 'proto': settings.WES_PROTO,
@@ -99,6 +107,7 @@ def workflow_list(request):
         return render(request, 'scheduler/workflow_list.html', context)
 
 
+@login_required
 def workflow_detail(request, run_id):
     client = WESClient(service={'auth': settings.WES_AUTH,
                                 'proto': settings.WES_PROTO,
@@ -112,6 +121,7 @@ def workflow_detail(request, run_id):
         return render(request, 'scheduler/workflow_detail.html', context)
 
 
+@login_required
 def workflow_delete(request, run_id):
 
     client = WESClient(service={'auth': settings.WES_AUTH,

@@ -1,4 +1,5 @@
 
+
 .PHONY: wes-server wes-client django-server django-migrate setup django-test celery-worker npm-rundev docker npm-cypress
 
 all: django-server
@@ -37,8 +38,11 @@ django-loaddata: setup
 django-test: setup
 	.venv/bin/python ./manage.py test
 
+django_createsuperuser: setup
+	.venv/bin/python ./manage.py createsuperuser
+
 celery-worker: setup
-	.venv/bin/celery -A buis worker -l info
+	DJANGO_SETTINGS_MODULE="buis.settings.dev" .venv/bin/celery -A buis worker -l info
 
 node_modules/:
 	npm update

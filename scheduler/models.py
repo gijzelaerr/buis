@@ -25,6 +25,9 @@ class Repository(models.Model):
     def active_branch(self):
         return self._get_disk_repo().active_branch
 
+    def branches(self):
+        return self._get_disk_repo().branches
+
     def refs(self):
         return self._get_disk_repo().refs
 
@@ -69,7 +72,8 @@ class RepositoryStateChange(models.Model):
 
     def __str__(self):
         return self.get_state_display()
-    
+
+
 class Workflow(models.Model):
     repository = models.ForeignKey(Repository, on_delete=models.CASCADE, related_name='workflows')
     run_id = models.CharField(max_length=32)
