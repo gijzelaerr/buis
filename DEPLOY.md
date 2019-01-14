@@ -67,4 +67,14 @@ server {
     return 404;
 }
 ```
- * start the uwsgi server: `# /home/gijs/buis/.venv/bin/uwsgi --socket /home/gijs/buis/buis/wsgi.sock --module buis.wsgi --gid www-data --uid gijs --chmod-socket=664 --chdir /home/gijs/buis/`
+ * start the uwsgi server:
+ ```# /home/gijs/buis/.venv/bin/uwsgi \
+    --socket /home/gijs/buis/buis/wsgi.sock \
+    --module buis.wsgi \
+    --env DJANGO_SETTINGS_MODULE=buis.settings.demo \
+    --gid www-data \
+    --uid gijs \
+    --chmod-socket=664 \
+    --chdir /home/gijs/buis/ \
+    --daemonize=/var/log/uwsgi.log
+    ```
