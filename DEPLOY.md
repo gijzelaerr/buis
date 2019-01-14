@@ -2,11 +2,13 @@
 
 * Create instance
 * modify domain to point to IPv4 and IPv6 address
-* create unpriviliged user (srv)
+* create unpriviliged user (`gijs`) and add this user to the `www-data` group
 * enable automatic updates: `# sudo dpkg-reconfigure --priority=low unattended-upgrades`
 * `# apt-get install rabbitmq-server python3 virtualenv npm python3-dev nginx git`
 * `$ cd ~ && git clone https://github.com/gijzelaerr/buis $$ cd buis`
 * `$ make django-migrate`
+* `$ make django-collectstatic`
+* Make sure the webserver can read and write the DB `$ chmod g+w -R db && chgrp -R www-data db`
 
 * install certbot: https://certbot.eff.org/lets-encrypt/ubuntubionic-nginx
 ```
