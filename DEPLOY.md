@@ -93,3 +93,8 @@ server {
     --gid=www-data \
     --logfile=celery.log
  ```
+
+  * start a WES worker:
+  ```
+  nohup /home/gijs/buis/.venv/bin/wes-server --backend=wes_service.cwl_runner --opt runner=/home/gijs/buis/.venv/bin/cwltoil --opt extra=--logLevel=CRITICAL &
+```
