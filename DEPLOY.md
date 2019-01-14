@@ -68,13 +68,28 @@ server {
 }
 ```
  * start the uwsgi server:
- ```# /home/gijs/buis/.venv/bin/uwsgi \
+ ```
+ # SECRET_KEY=bla \
+     DJANGO_SETTINGS_MODULE=buis.settings.demo \
+    /home/gijs/buis/.venv/bin/uwsgi \
     --socket /home/gijs/buis/buis/wsgi.sock \
     --module buis.wsgi \
-    --env DJANGO_SETTINGS_MODULE=buis.settings.demo \
     --gid www-data \
     --uid gijs \
     --chmod-socket=664 \
     --chdir /home/gijs/buis/ \
     --daemonize=/var/log/uwsgi.log
-    ```
+```
+
+ * start celery:
+```
+# SECRET_KEY=bla \
+  DJANGO_SETTINGS_MODULE=buis.settings.demo \
+  .venv/bin/celery multi start worker1 \
+    -A buis \
+    -l info  \
+    --workdir=/home/gijs/buis \
+    --uid=gijs \
+    --gid=www-data \
+    --logfile=celery.log
+ ```
