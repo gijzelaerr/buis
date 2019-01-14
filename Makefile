@@ -41,7 +41,7 @@ django-test: setup
 django-createsuperuser: setup
 	.venv/bin/python ./manage.py createsuperuser
 
-djang-collectstatic: setup
+django-collectstatic: setup
 	.venv/bin/python ./manage.py collectstatic
 
 celery-worker: setup
