@@ -38,8 +38,11 @@ django-loaddata: setup
 django-test: setup
 	.venv/bin/python ./manage.py test
 
-django_createsuperuser: setup
+django-createsuperuser: setup
 	.venv/bin/python ./manage.py createsuperuser
+
+djang-collectstatic: setup
+	.venv/bin/python ./manage.py collectstatic
 
 celery-worker: setup
 	DJANGO_SETTINGS_MODULE="buis.settings.dev" .venv/bin/celery -A buis worker -l info
