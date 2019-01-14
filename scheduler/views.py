@@ -1,7 +1,7 @@
 from logging import getLogger
-from os import listdir, path
+from os import listdir, path, walk
 from django.views.generic import ListView, DetailView, DeleteView
-from .models import Repository, RepositoryStateChange
+from .models import Repository, RepositoryStateChange, Workflow
 from .serializers import RepositorySerializer
 from django.views.generic.edit import CreateView
 from rest_framework.generics import ListCreateAPIView
@@ -11,10 +11,17 @@ from requests.exceptions import ConnectionError
 from django.http import HttpResponseServerError
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from .tasks import update, checkout
-
+from .tasks import update
 
 logger = getLogger(__name__)
+
+
+def get_cwl_files(prefix):
+    for root, dirs, files in walk(prefix):
+        subfolder = root[len(prefix)+1:]
+        for f in files:
+            if f.split('.')[-1] in ['cwl']:
+                yield path.join(subfolder, f)
 
 
 class RepositoryIndex(ListView):
@@ -52,10 +59,12 @@ class RepositoryListCreate(ListCreateAPIView):
     serializer_class = RepositorySerializer
 
 
-def repository_update(repo_id):
-    repo = Repository.objects.get(pk=repo_id)
-    update.delay(pk=repo_id)
-    return redirect('scheduler:repo_detail', repo_id)
+def repository_update(request, pk):
+    repo = Repository.objects.get(pk=pk)
+    repo.set_state(RepositoryStateChange.OUTDATED)
+    repo.save()
+    update.delay(pk=pk)
+    return redirect('scheduler:repo_list')
 
 
 def workflow_run(request, repo_id, cwl_path):
@@ -64,14 +73,15 @@ def workflow_run(request, repo_id, cwl_path):
                                 'host': settings.WES_HOST})
 
     repo = Repository.objects.get(pk=repo_id)
-
     full_cwl_path = path.abspath(path.join(repo.path(), cwl_path))
     assert(full_cwl_path.startswith(repo.path()))
     try:
-        client.run(full_cwl_path, '{}', [])
+        response = client.run(full_cwl_path, '{}', [])
     except (ConnectionError, Exception) as e:
         logger.critical(str(e))
         return HttpResponseServerError(e)
+    workflow = Workflow(repository=repo, run_id=response['run_id'])
+    workflow.save()
     return redirect('scheduler:workflow_list')
 
 
@@ -94,8 +104,7 @@ def workflow_detail(request, run_id):
                                 'proto': settings.WES_PROTO,
                                 'host': settings.WES_HOST})
     try:
-        run_log = client.get_run_log(run_id)
-        context = {'run_log': run_log}
+        context = client.get_run_log(run_id)
     except ConnectionError as e:
         logger.critical(str(e))
         return HttpResponseServerError(e)

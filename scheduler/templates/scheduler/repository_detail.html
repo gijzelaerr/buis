@@ -8,6 +8,28 @@
         <li>url: {{ object.url }}</li>
     </ul>
 
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <th scope="col">moment</th>
+            <th scope="col">state</th>
+            <th scope="col">message</th>
+
+            </thead>
+            <tbody>
+            {% for change in object.state_changes.all %}
+                <tr>
+                    <td>{{ change.moment }}</td>
+                    <td>{{ change.get_state_display }}</td>
+                    <td>{{ change.message }}</td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
     {% if ls %}
         <div class="table-responsive">
             <table class="table table-striped table-sm">
@@ -20,7 +42,10 @@
                     <tr>
 
                         <td>{{ file }}</td>
-                        <td><a href="{%  url 'scheduler:workflow_run' object.id file %}"><button type="button" class="btn btn-success">Run</button></a></td>
+                        <td>
+                            .py, .cwl, or .wdl.
+                            <a href="{%  url 'scheduler:workflow_run' object.id file %}"><button type="button" class="btn btn-success">Run</button></a>
+                        </td>
 
                     </tr>
                 {% endfor %}

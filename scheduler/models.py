@@ -20,7 +20,7 @@ class Repository(models.Model):
         return path.join(settings.GIT_DIR, str(self.pk))
 
     def _get_disk_repo(self):
-        return git.Repo(self.path)
+        return git.Repo(self.path())
 
     def active_branch(self):
         return self._get_disk_repo().active_branch
@@ -47,12 +47,14 @@ class Repository(models.Model):
 
 class RepositoryStateChange(models.Model):
     READY = 'RE'
+    OUTDATED = 'OU'
     UPDATING = 'UP'
     ADDED = 'AD'
     ERROR = 'ER'
 
     STATE_CHOICES = (
         (READY, 'Ready'),
+        (OUTDATED, 'Outdated'),
         (UPDATING, 'Updating'),
         (ADDED, 'Added'),
         (ERROR, 'Error'),
@@ -60,10 +62,14 @@ class RepositoryStateChange(models.Model):
 
     ordering = ['-moment']
 
-    repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
+    repository = models.ForeignKey(Repository, on_delete=models.CASCADE, related_name='state_changes')
+    message = models.TextField(null=True)
     moment = models.DateTimeField(auto_now_add=True)
     state = models.CharField(max_length=2, choices=STATE_CHOICES, default=ADDED)
-    message = models.TextField()
 
     def __str__(self):
         return self.get_state_display()
+    
+class Workflow(models.Model):
+    repository = models.ForeignKey(Repository, on_delete=models.CASCADE, related_name='workflows')
+    run_id = models.CharField(max_length=32)

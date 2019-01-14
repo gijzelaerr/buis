@@ -25,10 +25,10 @@
                     <tr>
                         <th scope="row">{{ object.id }}</th>
                         <td><a href="{%  url 'scheduler:repo_detail' object.id %}">{{ object.url }}</a></td>
-                        <td>{{ object.get_state }}</td>
+                        <td>{{ object.get_state.get_state_display }}</td>
                         <td>
                             <a href="{%  url 'scheduler:repo_delete' object.id %}"><button type="button" class="btn btn-danger">Delete</button></a>
-                            <a href=""><button type="button" class="btn btn-info">Update</button></a>
+                            <a href="{% url 'scheduler:repo_update' object.id %}"><button type="button" class="btn btn-info">Update</button></a>
                         </td>
                     </tr>
                 {% endfor %}

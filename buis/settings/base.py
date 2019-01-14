@@ -94,7 +94,6 @@ WES_PROTO = 'http'
 WES_HOST = 'localhost:8080'
 
 
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -106,7 +105,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
         },
     },
 }

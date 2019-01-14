@@ -3,3 +3,5 @@
 db.sqlite3
 node_modules
 gitscratch/*/
+static/*
+workflows/*
