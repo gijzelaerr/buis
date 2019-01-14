@@ -35,14 +35,11 @@ server {
 }
 
 server {
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
     server_name demo.pythonic.nl;
 
     location /static {
         alias /home/gijs/buis/static;
     }
-
 
     location / {
         uwsgi_pass  django;
