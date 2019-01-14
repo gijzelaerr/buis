@@ -7,3 +7,4 @@ gitpython
 ipython
 -e git+https://github.com/common-workflow-language/workflow-service.git@b286fd4f64e84d1f1e9f1f416b092ce8e0b46696#egg=wes-service
 django-debug-toolbar
+uwsgi
