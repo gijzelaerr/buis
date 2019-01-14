@@ -37,11 +37,12 @@ class Repository(models.Model):
                                    branch=branch)
 
     def get_state(self):
-        RepositoryStateChange.objects.get(repository=self)
+        return RepositoryStateChange.objects.filter(repository_id=self).first()
 
     def set_state(self, state, message=None):
         rsc = RepositoryStateChange(repository=self, state=state, message=message)
         rsc.save()
+        return rsc
 
 
 class RepositoryStateChange(models.Model):
@@ -57,7 +58,12 @@ class RepositoryStateChange(models.Model):
         (ERROR, 'Error'),
     )
 
+    ordering = ['-moment']
+
     repository = models.ForeignKey(Repository, on_delete=models.CASCADE)
     moment = models.DateTimeField(auto_now_add=True)
     state = models.CharField(max_length=2, choices=STATE_CHOICES, default=ADDED)
     message = models.TextField()
+
+    def __str__(self):
+        return self.get_state_display()

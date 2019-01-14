@@ -1,7 +1,7 @@
 from logging import getLogger
 from os import listdir, path
 from django.views.generic import ListView, DetailView, DeleteView
-from .models import Repository
+from .models import Repository, RepositoryStateChange
 from .serializers import RepositorySerializer
 from django.views.generic.edit import CreateView
 from rest_framework.generics import ListCreateAPIView
@@ -34,6 +34,12 @@ class RepositoryCreate(CreateView):
     model = Repository
     fields = ['url']
     success_url = reverse_lazy('scheduler:repo_list')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        rsc = RepositoryStateChange(repository=self.object, state=RepositoryStateChange.ADDED)
+        rsc.save()
+        return response
 
 
 class RepositoryDelete(DeleteView):
