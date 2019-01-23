@@ -14,6 +14,7 @@ from django.urls import reverse_lazy
 from .tasks import update, checkout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from cwl_utils.parser_v1_0 import load_document
 
 logger = getLogger(__name__)
 
@@ -70,6 +71,16 @@ def repository_update(request, pk):
     repo.save()
     update.delay(pk=pk)
     return redirect('scheduler:repo_list')
+
+
+@login_required
+def workflow_parse(request, repo_id, cwl_path):
+    repo = Repository.objects.get(pk=repo_id)
+    from urllib.parse import unquote
+    full_cwl_path = path.abspath(path.join(repo.path(), unquote(cwl_path)))
+    assert(full_cwl_path.startswith(repo.path()))
+    context = {'workflow': load_document(full_cwl_path)}
+    return render(request, 'scheduler/workflow_parse.html', context)
 
 
 @login_required

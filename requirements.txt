@@ -1,10 +1,11 @@
-toil[cwl]
+#toil[cwl]
 django>=2.1,<2.2
 celery>=4.2,<4.3
 django-celery-results
 djangorestframework
 gitpython
 ipython
--e git+https://github.com/common-workflow-language/workflow-service.git@b286fd4f64e84d1f1e9f1f416b092ce8e0b46696#egg=wes-service
+-e git+https://github.com/common-workflow-language/workflow-service.git@22c2d18e2b07b7bb622e05be470e5049a7e3db43#egg=wes-service
 django-debug-toolbar
 uwsgi
+cwl-utils

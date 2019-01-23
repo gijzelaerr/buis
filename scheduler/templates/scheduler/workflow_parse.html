@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <h2>Workflow parser</h2>
+
+    <h3>meta </h3>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <th scope="col">key</th>
+            <th scope="col">value</th>
+            </thead>
+            <tr>
+                <td>cwlVersion</td>
+                <td>{{ workflow.cwlVersion }}</td>
+            </tr>
+            <tr>
+                <td>id</td>
+                <td>{{ workflow.id }}</td>
+            </tr>
+            <tr>
+                <td>doc</td>
+                <td>{{ workflow.doc }}</td>
+            </tr>
+
+            <tr>
+                <td>Label</td>
+                <td>{{ workflow.lavel }}</td>
+            </tr>
+        </table>
+    </div>
+
+
+    <h3>extension_fields</h3>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <th scope="col">key</th>
+            <th scope="col">value</th>
+            </thead>
+            {% for key, value in workflow.extension_fields %}
+                <tr>
+                    <td>{{ key }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <h3>hints</h3>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <th scope="col">hint</th>
+            </thead>
+            {% for hint in workflow.hints %}
+                <tr>
+                    <td>{{ hint }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    
+    <h3>inputs</h3>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <th scope="col">id</th>
+            <th scope="col">type</th>
+            <th scope="col">default</th>
+            <th scope="col">doc</th>
+            <th scope="col">format</th>
+            <th scope="col">label</th>
+            <th scope="col">streamable</th>
+            <th scope="col">secondaryFiles</th>
+            <th scope="col">inputBinding</th>
+
+            </thead>
+            {% for input in workflow.inputs %}
+                <tr>
+                <td>{{ input.id }}</td>
+                <td>{{ input.type }}</td>
+                <td>{{ input.default }}</td>
+                <td>{{ input.doc }}</td>
+                <td>{{ input.format }}</td>
+                <td>{{ input.Label }}</td>
+                <td>{{ input.streamable }}</td>
+                <td>{{ input.secondaryFiles }}</td>
+                <td>{{ input.inputBinding }}</td>
+            {% endfor %}
+        </table>
+    </div>
+
+    <h3>outputs</h3>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <th scope="col">id</th>
+            <th scope="col">type</th>
+            <th scope="col">doc</th>
+            <th scope="col">format</th>
+            <th scope="col">label</th>
+            <th scope="col">streamable</th>
+            <th scope="col">secondaryFiles</th>
+            <th scope="col">outputBinding</th>
+            <th scope="col">outputSource</th>
+            <th scope="col">linkMerge</th>
+
+            </thead>
+            {% for output in workflow.outputs %}
+                <tr>
+                    <td>{{ output.id }}</td>
+                    <td>{{ output.type }}</td>
+                    <td>{{ output.doc }}</td>
+                    <td>{{ output.format }}</td>
+                    <td>{{ output.Label }}</td>
+                    <td>{{ output.streamable }}</td>
+                    <td>{{ output.secondaryFiles }}</td>
+                    <td>{{ output.outputBinding }}</td>
+                    <td>{{ output.outputSource }}</td>
+                    <td>{{ output.linkMerge }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+
+    <h3>requirements</h3>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <th scope="col">requirement</th>
+            </thead>
+            {% for requirement in workflow.requirements %}
+                <tr>
+                    <td>{{ requirement }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+
+    <h3>steps</h3>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <th scope="col">id
+            <th scope="col">doc
+            <th scope="col">in
+            <th scope="col">out
+            <th scope="col">run
+            <th scope="col">requirements
+            <th scope="col">hints
+            <th scope="col">label
+            <th scope="col">scatter
+            <th scope="col">scatterMethod
+            </thead>
+            {% for step in workflow.steps %}
+                <tr>
+                    <td>{{ step.id }}</td>
+                    <td>{{ step.doc }}</td>
+                    <td>{% for i in step.in_ %}{{ i.id }}, {% endfor %}</td>
+                    <td>{{ step.out }}</td>
+                    <td>{{ step.run }}</td>
+                    <td>{{ step.requirements }}</td>
+                    <td>{{ step.hints }}</td>
+                    <td>{{ step.label }}</td>
+                    <td>{{ step.scatter }}</td>
+                    <td>{{ step.scatterMethod }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+{% endblock %}
