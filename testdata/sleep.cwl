@@ -1,13 +1,11 @@
-#!/usr/bin/env cwl-runner
-
-class: CommandLineTool
-id: sleep
-label: sleep all night long
 cwlVersion: v1.0
+class: CommandLineTool
+baseCommand: sleep
 
-inputs: []
+inputs:
+  seconds:
+    type: int
+    inputBinding:
+      position: 1
 
-outputs: []
-
-baseCommand: [sleep, 50]
-
+outputs: {}
