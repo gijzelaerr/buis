@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
-from os import path
+import pathlib
 import git
 
 
@@ -17,10 +17,10 @@ class Repository(models.Model):
         return self.url
 
     def path(self):
-        return path.join(settings.GIT_DIR, str(self.pk))
+        return pathlib.Path(settings.GIT_DIR) / str(self.pk)
 
     def _get_disk_repo(self):
-        return git.Repo(self.path())
+        return git.Repo(str(self.path()))
 
     def active_branch(self):
         return self._get_disk_repo().active_branch
@@ -35,9 +35,7 @@ class Repository(models.Model):
         return self._get_disk_repo().remotes.origin.pull()
 
     def clone(self, branch='master'):
-        return git.Repo.clone_from(self.url,
-                                   path.join(settings.GIT_DIR, str(self.pk)),
-                                   branch=branch)
+        return git.Repo.clone_from(self.url, str(self.path), branch=branch)
 
     def get_state(self):
         return RepositoryStateChange.objects.filter(repository_id=self).first()

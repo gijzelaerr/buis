@@ -20,5 +20,6 @@ urlpatterns = [
     re_path(r'workflow/delete/(?P<run_id>[0-9a-f]{32})/$', views.workflow_delete, name='workflow_delete'),
 
     path('workflow/run/<int:repo_id>/<str:cwl_path>/', views.workflow_run, name='workflow_run'),
+    path('workflow/job/<int:repo_id>/<str:cwl_path>/', views.workflow_job, name='workflow_job'),
     path('workflow/parse/<int:repo_id>/<str:cwl_path>/', views.workflow_parse, name='workflow_parse'),
 ]

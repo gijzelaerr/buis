@@ -16,15 +16,20 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from cwl_utils.parser_v1_0 import load_document
 from scheduler.util import CwlForm
+from urllib.parse import unquote
+import yaml
+import pathlib
 
 logger = getLogger(__name__)
 
 
-def get_cwl_files(prefix):
-    for root, dirs, files in walk(prefix):
-        subfolder = root[len(prefix)+1:]
+def list_files(prefix: pathlib.Path, extensions=None):
+    if not extensions:
+        extensions = ['cwl']
+    for root, dirs, files in walk(str(prefix)):
+        subfolder = root[len(str(prefix))+1:]
         for f in files:
-            if f.split('.')[-1] in ['cwl']:
+            if f.split('.')[-1] in extensions:
                 yield path.join(subfolder, f)
 
 
@@ -48,7 +53,7 @@ class RepositoryDetail(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['ls'] = listdir(self.object.path())
-        context['cwl_files'] = get_cwl_files(self.object.path())
+        context['cwl_files'] = list_files(self.object.path())
         return context
 
 
@@ -75,15 +80,58 @@ def repository_update(request, pk):
 
 
 @login_required
+def workflow_job(request, repo_id, cwl_path):
+    repo = Repository.objects.get(pk=repo_id)
+    repo_path = repo.path()
+    full_cwl_path = (repo_path / unquote(cwl_path)).resolve()
+    assert(full_cwl_path.exists())
+    assert(repo_path in full_cwl_path.parents)
+    files = list_files(repo.path(), extensions=['yml', 'yaml'])
+
+    jobs = {}
+    for file in files:
+        try:
+            with open(repo_path / file) as f:
+                jobs[file] = yaml.load(f)
+        except Exception as e:
+            logger.error(f"can't parse {file}: {e}")
+
+    context = {'jobs': jobs, 'repo': repo, 'cwl_path': cwl_path}
+    return render(request, 'scheduler/workflow_job.html', context)
+
+
+@login_required
 def workflow_parse(request, repo_id, cwl_path):
     repo = Repository.objects.get(pk=repo_id)
-    from urllib.parse import unquote
-    full_cwl_path = path.abspath(path.join(repo.path(), unquote(cwl_path)))
-    assert(full_cwl_path.startswith(repo.path()))
-    workflow = load_document(full_cwl_path)
-    form = CwlForm(workflow.inputs)
+    repo_path = repo.path()
+    full_cwl_path = repo_path / unquote(cwl_path)
+    assert(full_cwl_path.exists())
+    assert(repo_path in full_cwl_path.parents)
+
+    job = {}
+    if 'job' in request.GET:
+        job_path = (repo_path / request.GET['job']).resolve()
+        assert(job_path.exists())
+        assert(repo_path in job_path.parents)
+        try:
+            with open(job_path) as f:
+                job = yaml.load(f)
+        except Exception as e:
+            logger.error(f"can't parse {job_path}: {e}")
+
+    workflow = load_document(str(full_cwl_path))
+    form = CwlForm(workflow.inputs, prefix=repo_path, values=job)
     context = {'workflow': workflow, 'form': form}
     return render(request, 'scheduler/workflow_parse.html', context)
+
+
+@login_required()
+def workflow_stage(request, repo_id, cwl_path):
+    repo = Repository.objects.get(pk=repo_id)
+    repo_path = repo.path()
+    full_cwl_path = repo_path / unquote(cwl_path)
+    assert(full_cwl_path.exists())
+    assert(repo_path in full_cwl_path.parents)
 
 
 @login_required
@@ -93,7 +141,7 @@ def workflow_run(request, repo_id, cwl_path):
                                 'host': settings.WES_HOST})
 
     repo = Repository.objects.get(pk=repo_id)
-    from urllib.parse import unquote
+
     full_cwl_path = path.abspath(path.join(repo.path(), unquote(cwl_path)))
     assert(full_cwl_path.startswith(repo.path()))
     try:
