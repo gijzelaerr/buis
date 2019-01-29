@@ -6,6 +6,7 @@ from toil.cwl import cwltoil
 from shutil import rmtree
 import subprocess
 import re
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +72,7 @@ def run_workflow(pk: int):
     with open(stdout_file, mode='wt') as stdout:
         with open(stderr_file, mode='wt') as stderr:
             args = [
-                '/home/gijs/Work/buis/.venv/bin/cwltoil',
+                settings.TOIL_BIN,
                 '--jobStore', str(jobstore),
                 '--workDir', str(workdir),
                 '--stats',

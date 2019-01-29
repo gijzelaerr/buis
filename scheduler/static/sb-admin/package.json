@@ -1,0 +1,110 @@
+{
+  "_args": [
+    [
+      "startbootstrap-sb-admin",
+      "/home/gijs/Work/buis"
+    ]
+  ],
+  "_from": "startbootstrap-sb-admin@latest",
+  "_hasShrinkwrap": false,
+  "_id": "startbootstrap-sb-admin@5.0.2",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/startbootstrap-sb-admin",
+  "_nodeVersion": "10.0.0",
+  "_npmOperationalInternal": {
+    "host": "s3://npm-registry-packages",
+    "tmp": "tmp/startbootstrap-sb-admin_5.0.2_1536632165352_0.7716093228399119"
+  },
+  "_npmUser": {
+    "email": "feedback@startbootstrap.com",
+    "name": "startbootstrap"
+  },
+  "_npmVersion": "6.4.0",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "startbootstrap-sb-admin",
+    "raw": "startbootstrap-sb-admin",
+    "rawSpec": "",
+    "scope": null,
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/startbootstrap-sb-admin/-/startbootstrap-sb-admin-5.0.2.tgz",
+  "_shasum": "4526871008be5c2a866bcd00eac6eb206f07cf98",
+  "_shrinkwrap": null,
+  "_spec": "startbootstrap-sb-admin",
+  "_where": "/home/gijs/Work/buis",
+  "author": {
+    "name": "Start Bootstrap"
+  },
+  "bugs": {
+    "email": "feedback@startbootstrap.com",
+    "url": "https://github.com/BlackrockDigital/startbootstrap-sb-admin/issues"
+  },
+  "contributors": [
+    {
+      "name": "David Miller",
+      "url": "http://davidmiller.io/"
+    }
+  ],
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "5.3.1",
+    "bootstrap": "4.1.3",
+    "chart.js": "2.7.2",
+    "datatables.net-bs4": "1.10.19",
+    "jquery": "3.3.1",
+    "jquery.easing": "^1.4.1"
+  },
+  "description": "A one page app landing page HTML theme for Bootstrap.",
+  "devDependencies": {
+    "browser-sync": "2.24.7",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "6.0.0",
+    "gulp-clean-css": "3.10.0",
+    "gulp-header": "2.0.5",
+    "gulp-rename": "1.4.0",
+    "gulp-sass": "4.0.1",
+    "gulp-uglify": "3.0.1"
+  },
+  "directories": {},
+  "dist": {
+    "fileCount": 1492,
+    "integrity": "sha512-CglKXyBYE+Mr4v65dfhbZtmp+G1OTrIQEsWtAlOHmMjADW9SO6hIUdHwiRbaMiSS81vqcmI4JNtzon8GFJwt6Q==",
+    "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJblyVmCRA9TVsSAnZWagAAxM8QAKTRoeomxxOkZd8ivFqF\nW/1QQeuVKrRcvQQBP90zHP9ghcLeN21cUvPwGW+QmNYPYpiqt5rOjE2UEqTD\nJynlPGj6WwYzcsHrw5R7kPJ7r4PCIfJWcIpRm1GeNpuj6DpHwBC2t/tOjS4u\nqEtYFkHOqR9rZbAIBMPLTC5Sj7VBkjvP1p2Xv3nJ/P6FO+VU0Wqi3w+yN7cK\nRQ6CoWVwouwKBXh0ywV73aigBR5L9RurUvWbSvbnkYzBfXb+uXIdTEzIR/1G\nwe6t0R7DtE6pqyq1kZnON29s/j1l2SXPxIjm+hM8HUNBuGBU2FPLiDt1D73J\nBLYxfQBA6HeXtEShpWuoj7SHn+PU1tTLluRg5BBleDvXgFPpsbPtdiedOIfX\ndv1rEBv9xSTykERqTmX30SyIMmFv5S5PykN0TgQxNBct3ckabbSD7Unl4P5O\n9RiTBv1wp7s+yK7Pyt23/ndOOPbMFZkrChbSt+Us3Fu2A6K7w2SpsA5zudl8\n3sH7fsZvP5Plkx+7mzF+Jc2R60UYpnWKCb/NtS44tQep6Hv3DZrXtTnvxxGz\nTtAfN7K72NUXz5z0+o7xCTlRp8pUGr+n57tPNFAT/E/rW4nmDE4JBcFHMt+o\nQpomqxf/Xs96mFe+gCFZVbIORQ3oQyy0ftqKEr549ggXjVY+a3kK+fbPvVs2\nNMhN\r\n=HNaE\r\n-----END PGP SIGNATURE-----\r\n",
+    "shasum": "4526871008be5c2a866bcd00eac6eb206f07cf98",
+    "tarball": "https://registry.npmjs.org/startbootstrap-sb-admin/-/startbootstrap-sb-admin-5.0.2.tgz",
+    "unpackedSize": 15331900
+  },
+  "gitHead": "7faec7dc4c7ad9aedb29a0aab0e65aea5904ada1",
+  "homepage": "https://startbootstrap.com/template-overviews/sb-admin",
+  "keywords": [
+    "admin",
+    "app",
+    "css",
+    "html",
+    "responsive",
+    "sass",
+    "template",
+    "theme"
+  ],
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "startbootstrap",
+      "email": "feedback@startbootstrap.com"
+    }
+  ],
+  "name": "startbootstrap-sb-admin",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlackrockDigital/startbootstrap-sb-admin.git"
+  },
+  "title": "SB Admin",
+  "version": "5.0.2"
+}

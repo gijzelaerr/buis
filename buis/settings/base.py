@@ -110,3 +110,6 @@ LOGGING = {
         },
     },
 }
+
+
+TOIL_BIN = path.join(BASE_DIR, '.venv/bin/toil-cwl-runner')

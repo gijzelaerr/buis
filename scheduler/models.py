@@ -103,10 +103,16 @@ class Workflow(models.Model):
         return self.path() / "job.json"
 
     def stdout(self):
-        return open(self.path() / "stdout").read()
+        try:
+            return open(self.path() / "stdout").read()
+        except FileNotFoundError:
+            return ""
 
     def stderr(self):
-        return open(self.path() / "stderr").read()
+        try:
+            return open(self.path() / "stderr").read()
+        except FileNotFoundError:
+            return ""
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

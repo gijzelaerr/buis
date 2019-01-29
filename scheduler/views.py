@@ -43,6 +43,11 @@ class RepositoryListCreate(LoginRequiredMixin, ListCreateAPIView):
 class RepositoryIndex(LoginRequiredMixin, ListView):
     model = Repository
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu'] = 'repo'
+        return context
+
 
 class RepositoryDetail(LoginRequiredMixin, DetailView):
     model = Repository
@@ -163,12 +168,26 @@ class WorkflowCreate(LoginRequiredMixin, CreateView):
 class WorkflowList(LoginRequiredMixin, ListView):
     model = Workflow
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu'] = 'workflow'
+        return context
+
 
 class WorkflowDelete(LoginRequiredMixin, DeleteView):
     model = Workflow
     success_url = reverse_lazy('scheduler:workflow_list')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu'] = 'repo'
+        return context
+
 
 class WorkflowDetail(LoginRequiredMixin, DetailView):
     model = Workflow
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu'] = 'repo'
+        return context
