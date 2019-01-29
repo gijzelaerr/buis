@@ -35,7 +35,7 @@ class Repository(models.Model):
         return self._get_disk_repo().remotes.origin.pull()
 
     def clone(self, branch='master'):
-        return git.Repo.clone_from(self.url, str(self.path), branch=branch)
+        return git.Repo.clone_from(self.url, str(self.path()), branch=branch)
 
     def get_state(self):
         return RepositoryStateChange.objects.filter(repository_id=self).last()
@@ -44,6 +44,10 @@ class Repository(models.Model):
         rsc = RepositoryStateChange(repository=self, state=state, message=message)
         rsc.save()
         return rsc
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.path().mkdir(parents=True, exist_ok=True)
 
 
 class RepositoryStateChange(models.Model):

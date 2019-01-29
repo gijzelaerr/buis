@@ -106,7 +106,7 @@ def workflow_job(request, repo_id, cwl_path):
 def workflow_parse(request, repo_id, cwl_path):
     repo = Repository.objects.get(pk=repo_id)
     repo_path = repo.path()
-    full_cwl_path = repo_path / unquote(cwl_path)
+    full_cwl_path = repo_path / unquote(unquote(cwl_path))
     assert(full_cwl_path.exists())
     assert(repo_path in full_cwl_path.parents)
 
