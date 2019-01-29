@@ -2,14 +2,16 @@ import logging
 from celery import shared_task
 import git
 from scheduler.models import Repository, RepositoryStateChange, Workflow
-import json
 from toil.cwl import cwltoil
+from shutil import rmtree
+import subprocess
+import re
 
 logger = logging.getLogger(__name__)
 
 
 @shared_task
-def checkout(pk, branch='master'):
+def checkout(pk: int, branch='master'):
     logger.info(f"checking out repo for repository {pk}")
     db_repo = Repository.objects.get(pk=pk)
     db_repo.set_state(RepositoryStateChange.UPDATING)
@@ -28,7 +30,7 @@ def checkout(pk, branch='master'):
 
 
 @shared_task
-def update(pk):
+def update(pk: int):
     db_repo = Repository.objects.get(pk=pk)
     db_repo.set_state(RepositoryStateChange.UPDATING)
     db_repo.save()
@@ -45,17 +47,44 @@ def update(pk):
         db_repo.save()
 
 
+def insert_newliners(s):
+    return re.sub("(.{120})", "\\1\n", s, 0, re.DOTALL)
+
+
 @shared_task
-def run_workflow(pk: int, cwl_file: str, job_dict: dict):
-    logger.info(f"Starting workflow {pk} with CWL file {cwl_file}")
+def run_workflow(pk: int):
+    logger.info(f"Starting workflow {pk}")
     workflow = Workflow.objects.get(pk=pk)
     workflow.state = workflow.RUNNING
+    workflow.error_message = ""
+    workflow.save()
 
-    job_file = str(workflow.path() / "job.json")
     stdout_file = str(workflow.path() / "stdout")
-    with open(job_file, mode='wt') as job:
-        with open(stdout_file, mode='wt') as stdout:
-            json.dump(job_dict, job)
-            job.flush()
-            args = [cwl_file, job_file]
-            cwltoil.main(args=args, stdout=stdout)
+    stderr_file = str(workflow.path() / "stderr")
+    workdir = workflow.path() / 'work'
+    workdir.mkdir(parents=True, exist_ok=True)
+
+    jobstore = workflow.path() / 'job'
+    if jobstore.exists():
+        rmtree(str(jobstore))
+
+    with open(stdout_file, mode='wt') as stdout:
+        with open(stderr_file, mode='wt') as stderr:
+            args = [
+                '/home/gijs/Work/buis/.venv/bin/cwltoil',
+                '--jobStore', str(jobstore),
+                '--workDir', str(workdir),
+                '--stats',
+                str(workflow.full_cwl_path()),
+                str(workflow.full_job_path())]
+            try:
+                 subprocess.run(args, check=True, stdout=stdout, stderr=stderr)
+                # cwltoil.main(args, stdout=stdout)
+            except Exception as e:
+                logger.error(e)
+                workflow.error_message = insert_newliners(str(e))
+                workflow.state = workflow.ERROR
+                workflow.save()
+            else:
+                workflow.state = workflow.DONE
+                workflow.save()

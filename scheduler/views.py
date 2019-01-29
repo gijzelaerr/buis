@@ -15,6 +15,7 @@ from scheduler.util import CwlForm
 from urllib.parse import unquote
 import yaml
 import pathlib
+import json
 
 logger = getLogger(__name__)
 
@@ -119,9 +120,15 @@ def workflow_parse(request, repo_id, cwl_path):
     if request.method == 'POST':
         form = CwlForm(parsed_workflow.inputs, data=request.POST, prefix=repo_path, default_values=job)
         if form.is_valid():
-            workflow = Workflow(repository=repo)
+            relative_cwl = full_cwl_path.relative_to(repo_path)
+            workflow = Workflow(repository=repo, cwl_path=relative_cwl)
             workflow.save()
-            run_workflow.delay(pk=workflow.id, cwl_file=str(full_cwl_path), job_dict=form.back_to_cwl_job())
+
+            with open(workflow.full_job_path(), mode='wt') as job:
+                    json.dump(form.back_to_cwl_job(), job)
+
+            run_workflow.delay(pk=workflow.id)
+
             return redirect('scheduler:workflow_list')
 
     else:
@@ -129,6 +136,12 @@ def workflow_parse(request, repo_id, cwl_path):
 
     context = {'workflow': parsed_workflow, 'form': form, 'repo': repo, 'cwl_path': cwl_path}
     return render(request, 'scheduler/workflow_parse.html', context)
+
+
+@login_required
+def workflow_restart(request, pk):
+    run_workflow.delay(pk=pk)
+    return redirect('scheduler:workflow_list')
 
 
 @login_required

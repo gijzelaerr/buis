@@ -38,7 +38,7 @@ class Repository(models.Model):
         return git.Repo.clone_from(self.url, str(self.path), branch=branch)
 
     def get_state(self):
-        return RepositoryStateChange.objects.filter(repository_id=self).first()
+        return RepositoryStateChange.objects.filter(repository_id=self).last()
 
     def set_state(self, state, message=None):
         rsc = RepositoryStateChange(repository=self, state=state, message=message)
@@ -85,12 +85,28 @@ class Workflow(models.Model):
         (DONE, 'Done'),
     )
 
+    ordering = ['-moment']
+
     repository = models.ForeignKey(Repository, on_delete=models.CASCADE, related_name='workflows')
     moment = models.DateTimeField(auto_now_add=True)
     state = models.CharField(max_length=2, choices=STATE_CHOICES, default=ADDED)
+    cwl_path = models.CharField(max_length=100)
+    error_message = models.TextField(blank=True)
 
     def path(self):
         return pathlib.Path(settings.WORKFLOW_DIR) / str(self.pk)
+
+    def full_cwl_path(self):
+        return self.repository.path() / self.cwl_path
+
+    def full_job_path(self):
+        return self.path() / "job.json"
+
+    def stdout(self):
+        return open(self.path() / "stdout").read()
+
+    def stderr(self):
+        return open(self.path() / "stderr").read()
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

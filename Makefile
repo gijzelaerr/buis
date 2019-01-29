@@ -1,6 +1,4 @@
-
-
-.PHONY: wes-server wes-client django-server django-migrate setup django-test celery-worker npm-rundev docker npm-cypress
+.PHONY: django-server django-migrate setup django-test celery-worker npm-rundev docker npm-cypress
 
 all: django-server
 
@@ -12,16 +10,6 @@ all: django-server
 	touch .venv/installed
 
 setup: .venv/installed
-
-wes-server: setup
-	.venv/bin/wes-server --backend=wes_service.cwl_runner --opt runner=$(CURDIR)/.venv/bin/cwltoil \
-		--opt extra=--logLevel=CRITICAL
-
-wes-list: setup
-	 .venv/bin/wes-client --proto http --host=localhost:8080 --list
-
-wes-submit: setup
-	.venv/bin/wes-client --host=localhost:8080 --proto=http --attachments=testdata/sleep.cwl testdata/sleep.cwl testdata/sleep.json
 
 django-server: setup
 	.venv/bin/python ./manage.py runserver

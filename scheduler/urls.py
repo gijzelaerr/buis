@@ -16,6 +16,7 @@ urlpatterns = [
     path('workflow/create/<int:repo_id>/<str:cwl_path>/', views.WorkflowCreate.as_view(), name='workflow_create'),
     path(r'workflow/detail/<int:pk>/', views.WorkflowDetail.as_view(), name='workflow_detail'),
     path(r'workflow/delete/<int:pk>/', views.WorkflowDelete.as_view(), name='workflow_delete'),
+    path(r'workflow/restart/<int:pk>/', views.workflow_restart, name='workflow_restart'),
 
     # intermediate workflow creation steps
     path('workflow/run/<int:repo_id>/<str:cwl_path>/', views.workflow_run, name='workflow_run'),
