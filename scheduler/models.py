@@ -17,7 +17,7 @@ class Repository(models.Model):
         return self.url
 
     def path(self):
-        return pathlib.Path(settings.GIT_DIR) / str(self.pk)
+        return pathlib.Path(settings.REPO_DIR) / str(self.pk)
 
     def _get_disk_repo(self):
         return git.Repo(str(self.path()))
@@ -73,5 +73,25 @@ class RepositoryStateChange(models.Model):
 
 
 class Workflow(models.Model):
+    ADDED = 'AD'
+    RUNNING = 'RU'
+    ERROR = 'ER'
+    DONE = 'OK'
+
+    STATE_CHOICES = (
+        (ADDED, 'Added'),
+        (RUNNING, 'Running'),
+        (ERROR, 'Error'),
+        (DONE, 'Done'),
+    )
+
     repository = models.ForeignKey(Repository, on_delete=models.CASCADE, related_name='workflows')
-    run_id = models.CharField(max_length=32)
+    moment = models.DateTimeField(auto_now_add=True)
+    state = models.CharField(max_length=2, choices=STATE_CHOICES, default=ADDED)
+
+    def path(self):
+        return pathlib.Path(settings.WORKFLOW_DIR) / str(self.pk)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.path().mkdir(parents=True, exist_ok=True)

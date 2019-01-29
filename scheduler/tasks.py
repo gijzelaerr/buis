@@ -1,7 +1,9 @@
 import logging
 from celery import shared_task
 import git
-from scheduler.models import Repository, RepositoryStateChange
+from scheduler.models import Repository, RepositoryStateChange, Workflow
+import json
+from toil.cwl import cwltoil
 
 logger = logging.getLogger(__name__)
 
@@ -41,3 +43,19 @@ def update(pk):
         logger.info(f"finished updating repository {pk}")
         db_repo.set_state(RepositoryStateChange.READY)
         db_repo.save()
+
+
+@shared_task
+def run_workflow(pk: int, cwl_file: str, job_dict: dict):
+    logger.info(f"Starting workflow {pk} with CWL file {cwl_file}")
+    workflow = Workflow.objects.get(pk=pk)
+    workflow.state = workflow.RUNNING
+
+    job_file = str(workflow.path() / "job.json")
+    stdout_file = str(workflow.path() / "stdout")
+    with open(job_file, mode='wt') as job:
+        with open(stdout_file, mode='wt') as stdout:
+            json.dump(job_dict, job)
+            job.flush()
+            args = [cwl_file, job_file]
+            cwltoil.main(args=args, stdout=stdout)

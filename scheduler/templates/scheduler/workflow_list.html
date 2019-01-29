@@ -3,21 +3,19 @@
 {% block content %}
     <h2>Workflows</h2>
 
-      {% if workflows %}
+      {% if workflow_list %}
         <div class="table-responsive">
             <table class="table table-striped table-sm">
                 <thead>
-                <th scope="col">run id</th>
-                <th scope="col">state</th>
+                <th scope="col">id</th>
                 <th scope="col">actions</th>
                 </thead>
                 <tbody>
-                {% for object in workflows %}
+                {% for workflow in workflow_list %}
                     <tr>
 
-                        <td><a href="{% url 'scheduler:workflow_detail' run_id=object.run_id %}">{{ object.run_id }}</a></td>
-                        <td>{{ object.state }}</td>
-                        <td><a href="{% url 'scheduler:workflow_delete' object.run_id %}"><button type="button" class="btn btn-danger btn-sm">Delete</button></td></a></td>
+                        <td><a href="{% url 'scheduler:workflow_detail' workflow.id %}">{{ workflow }}</a></td>
+                        <td><a href="{% url 'scheduler:workflow_delete' workflow.id %}"><button type="button" class="btn btn-danger btn-sm">Delete</button></a></td></td>
                     </tr>
                 {% endfor %}
                 </tbody>

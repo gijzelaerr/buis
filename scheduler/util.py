@@ -6,6 +6,7 @@ from cwl_utils.parser_v1_0 import InputParameter
 from typing import List, Optional
 from cwl_utils.parser_v1_0 import InputArraySchema
 from pathlib import Path
+import json
 
 mapping = {
     'null': forms.BooleanField,
@@ -21,14 +22,9 @@ mapping = {
 
 
 class CwlForm(forms.Form):
-    def __init__(self, inputs: List[InputParameter], prefix: Path, values: Optional[dict]=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
-        if not values:
-            values = {}
-
+    def add_fields(self, inputs: List[InputParameter], default_values: dict, prefix: Path):
         for input in inputs:
-
             params = {}
 
             # unused cwl fields: format, inputBinding, secondaryFiles, streamable
@@ -55,10 +51,26 @@ class CwlForm(forms.Form):
                 params['recursive'] = True
                 params['match'] = "^(?!\.git|\\.).*"
 
-            if id in values:
-                params['initial'] = values[id]
+            if id in default_values:
+                params['initial'] = default_values[id]
             else:
                 params['initial'] = input.default
             params['label'] = input.label
 
             self.fields[id] = type_(**params)
+
+    def __init__(self, inputs: List[InputParameter], prefix: Path, default_values: Optional[dict]=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not default_values:
+            default_values = {}
+
+        self.inputs = inputs
+        self.prefix = prefix
+        self.add_fields(inputs=inputs, default_values=default_values, prefix=prefix)
+
+    def back_to_cwl_job(self):
+        return self.cleaned_data
+
+
+
+

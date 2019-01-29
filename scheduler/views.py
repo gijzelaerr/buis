@@ -5,13 +5,9 @@ from .models import Repository, RepositoryStateChange, Workflow
 from .serializers import RepositorySerializer
 from django.views.generic.edit import CreateView
 from rest_framework.generics import ListCreateAPIView
-from wes_client.util import WESClient
-from django.conf import settings
-from requests.exceptions import ConnectionError
-from django.http import HttpResponseServerError
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from .tasks import update, checkout
+from .tasks import update, checkout, run_workflow
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from cwl_utils.parser_v1_0 import load_document
@@ -119,86 +115,47 @@ def workflow_parse(request, repo_id, cwl_path):
         except Exception as e:
             logger.error(f"can't parse {job_path}: {e}")
 
-    workflow = load_document(str(full_cwl_path))
-    form = CwlForm(workflow.inputs, prefix=repo_path, values=job)
-    context = {'workflow': workflow, 'form': form}
+    parsed_workflow = load_document(str(full_cwl_path))
+    if request.method == 'POST':
+        form = CwlForm(parsed_workflow.inputs, data=request.POST, prefix=repo_path, default_values=job)
+        if form.is_valid():
+            workflow = Workflow(repository=repo)
+            workflow.save()
+            run_workflow.delay(pk=workflow.id, cwl_file=str(full_cwl_path), job_dict=form.back_to_cwl_job())
+            return redirect('scheduler:workflow_list')
+
+    else:
+        form = CwlForm(parsed_workflow.inputs, prefix=repo_path, default_values=job)
+
+    context = {'workflow': parsed_workflow, 'form': form, 'repo': repo, 'cwl_path': cwl_path}
     return render(request, 'scheduler/workflow_parse.html', context)
-
-
-@login_required()
-def workflow_stage(request, repo_id, cwl_path):
-    repo = Repository.objects.get(pk=repo_id)
-    repo_path = repo.path()
-    full_cwl_path = repo_path / unquote(cwl_path)
-    assert(full_cwl_path.exists())
-    assert(repo_path in full_cwl_path.parents)
 
 
 @login_required
 def workflow_run(request, repo_id, cwl_path):
-    client = WESClient(service={'auth': settings.WES_AUTH,
-                                'proto': settings.WES_PROTO,
-                                'host': settings.WES_HOST})
-
     repo = Repository.objects.get(pk=repo_id)
 
     full_cwl_path = path.abspath(path.join(repo.path(), unquote(cwl_path)))
     assert(full_cwl_path.startswith(repo.path()))
-    try:
-        response = client.run(full_cwl_path, '{}', [])
-    except (ConnectionError, Exception) as e:
-        logger.critical(str(e))
-        return HttpResponseServerError(e)
-    workflow = Workflow(repository=repo, run_id=response['run_id'])
+
+    workflow = Workflow(repository=repo)
     workflow.save()
     return redirect('scheduler:workflow_list')
 
 
-@login_required
-def workflow_list(request):
-    client = WESClient(service={'auth': settings.WES_AUTH,
-                                'proto': settings.WES_PROTO,
-                                'host': settings.WES_HOST})
-    try:
-        service_info = client.get_service_info()
-        context = client.list_runs()
-    except ConnectionError as e:
-        logger.critical(str(e))
-        return HttpResponseServerError(e)
-    else:
-        return render(request, 'scheduler/workflow_list.html', context)
+class WorkflowCreate(LoginRequiredMixin, CreateView):
+    model = Workflow
 
 
-@login_required
-def workflow_detail(request, run_id):
-    client = WESClient(service={'auth': settings.WES_AUTH,
-                                'proto': settings.WES_PROTO,
-                                'host': settings.WES_HOST})
-    try:
-        context = client.get_run_log(run_id)
-    except ConnectionError as e:
-        logger.critical(str(e))
-        return HttpResponseServerError(e)
-    else:
-        return render(request, 'scheduler/workflow_detail.html', context)
+class WorkflowList(LoginRequiredMixin, ListView):
+    model = Workflow
 
 
-@login_required
-def workflow_delete(request, run_id):
+class WorkflowDelete(LoginRequiredMixin, DeleteView):
+    model = Workflow
+    success_url = reverse_lazy('scheduler:workflow_list')
 
-    client = WESClient(service={'auth': settings.WES_AUTH,
-                                'proto': settings.WES_PROTO,
-                                'host': settings.WES_HOST})
-    try:
-        context = client.get_run_status(run_id)
-    except ConnectionError as e:
-        logger.critical(str(e))
-        return HttpResponseServerError(e)
 
-    if request.method == 'POST':
-        logger.info("canceling workflow {}".format(run_id))
-        client.cancel(run_id)
-        return redirect('scheduler:workflow_list')
-    else:
-        return render(request, 'scheduler/workflow_confirm_delete.html', context)
+class WorkflowDetail(LoginRequiredMixin, DetailView):
+    model = Workflow
 

@@ -85,7 +85,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-GIT_DIR = path.join(BASE_DIR, 'gitscratch')
+REPO_DIR = path.join(BASE_DIR, 'scratch/repo/')
+WORKFLOW_DIR = path.join(BASE_DIR, 'scratch/workflow/')
 
 CELERY_RESULT_BACKEND = 'django-db'
 

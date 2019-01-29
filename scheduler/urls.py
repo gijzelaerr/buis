@@ -1,4 +1,4 @@
-from django.urls import path, re_path
+from django.urls import path
 
 from . import views
 
@@ -12,14 +12,17 @@ urlpatterns = [
     path('delete/<int:pk>/', views.RepositoryDelete.as_view(), name='repo_delete'),
     path('update/<int:pk>/', views.repository_update, name='repo_update'),
 
-    path('api/repository/', views.RepositoryListCreate.as_view()),
+    path('workflow/list/', views.WorkflowList.as_view(), name='workflow_list'),
+    path('workflow/create/<int:repo_id>/<str:cwl_path>/', views.WorkflowCreate.as_view(), name='workflow_create'),
+    path(r'workflow/detail/<int:pk>/', views.WorkflowDetail.as_view(), name='workflow_detail'),
+    path(r'workflow/delete/<int:pk>/', views.WorkflowDelete.as_view(), name='workflow_delete'),
 
-
-    re_path(r'workflow/detail/(?P<run_id>[0-9a-f]{32})/$', views.workflow_detail, name='workflow_detail'),
-    path('workflow/list/', views.workflow_list, name='workflow_list'),
-    re_path(r'workflow/delete/(?P<run_id>[0-9a-f]{32})/$', views.workflow_delete, name='workflow_delete'),
-
+    # intermediate workflow creation steps
     path('workflow/run/<int:repo_id>/<str:cwl_path>/', views.workflow_run, name='workflow_run'),
     path('workflow/job/<int:repo_id>/<str:cwl_path>/', views.workflow_job, name='workflow_job'),
     path('workflow/parse/<int:repo_id>/<str:cwl_path>/', views.workflow_parse, name='workflow_parse'),
+
+    # Rest API
+    path('api/repository/', views.RepositoryListCreate.as_view()),
+
 ]
