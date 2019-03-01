@@ -19,6 +19,7 @@ urlpatterns = [
     path(r'workflow/restart/<int:pk>/', views.workflow_restart, name='workflow_restart'),
 
     # intermediate workflow creation steps
+    path('workflow/run/<int:repo_id>/<str:cwl_path>/', views.workflow_visualize, name='workflow_visualize'),
     path('workflow/run/<int:repo_id>/<str:cwl_path>/', views.workflow_run, name='workflow_run'),
     path('workflow/job/<int:repo_id>/<str:cwl_path>/', views.workflow_job, name='workflow_job'),
     path('workflow/parse/<int:repo_id>/<str:cwl_path>/', views.workflow_parse, name='workflow_parse'),

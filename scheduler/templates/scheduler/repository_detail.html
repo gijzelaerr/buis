@@ -69,9 +69,8 @@
 
                         <td>{{ file }}</td>
                         <td>
-                            <a href="{% url 'scheduler:workflow_job' object.id file|urlencode:"" %}">
-                                <button type="button" class="btn btn-success btn-sm">Run</button>
-                            </a>
+                            <a href="{% url 'scheduler:workflow_job' object.id file|urlencode:"" %}"><button type="button" class="btn btn-success btn-sm">Run</button></a>
+                            <a href="{% url 'scheduler:workflow_visualize' object.id file|urlencode:"" %}"><button type="button" class="btn btn-primary btn-sm">Visualise</button></a>
                         </td>
 
                     </tr>

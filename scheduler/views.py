@@ -13,6 +13,9 @@ from django.contrib.auth.decorators import login_required
 from cwl_utils.parser_v1_0 import load_document
 from scheduler.util import CwlForm
 from urllib.parse import unquote
+from .util import cwl2dot
+from cwltool.cwlrdf import printdot
+from cwltool.load_tool import make_tool
 import yaml
 import pathlib
 import json
@@ -79,6 +82,20 @@ def repository_update(request, pk):
     repo.save()
     update.delay(pk=pk)
     return redirect('scheduler:repo_list')
+
+
+@login_required
+def workflow_visualize(request, repo_id, cwl_path):
+    repo = Repository.objects.get(pk=repo_id)
+    repo_path = repo.path()
+    full_cwl_path = (repo_path / unquote(cwl_path)).resolve()
+    assert(full_cwl_path.exists())
+    assert(repo_path in full_cwl_path.parents)
+
+    dot = cwl2dot(str(full_cwl_path))
+
+    context = {'repo': repo, 'cwl_path': cwl_path, 'dot': dot}
+    return render(request, 'scheduler/workflow_visualize.html', context)
 
 
 @login_required
