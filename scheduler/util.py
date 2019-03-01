@@ -6,15 +6,9 @@ from cwl_utils.parser_v1_0 import InputParameter
 from typing import List, Optional
 from cwl_utils.parser_v1_0 import InputArraySchema
 from pathlib import Path
-import pkg_resources
-
-from cwltool import workflow  # unused but cwl2dot breaks if we don't import
-from cwltool import __name__ as cwltool_name
-from cwltool.context import LoadingContext
-from cwltool.cwlrdf import printdot
-from cwltool.load_tool import fetch_document, make_tool, resolve_tool_uri, validate_document
-from cwltool.process import use_custom_schema, use_standard_schema
+from cwltool.main import main
 from io import StringIO
+
 
 mapping = {
     'null': forms.BooleanField,
@@ -80,27 +74,16 @@ class CwlForm(forms.Form):
     def back_to_cwl_job(self):
         return self.cleaned_data
 
+from cwltool.main import main
 
-def cwl2dot(workflow_path='testdata/sleep_workflow.cwl', enable_ext=True):
+def cwl2dot(workflow_path):
     """
     Parses a CWL definition and return the dot representation
     """
-    if enable_ext:
-        res = pkg_resources.resource_stream(cwltool_name, 'extensions.yml')
-        use_custom_schema("v1.0", "http://commonwl.org/cwltool", res.read())
-        res.close()
-    else:
-        use_standard_schema("v1.0")
-
-    uri, tool_file_uri = resolve_tool_uri(workflow_path)
-    document_loader, workflowobj, uri = fetch_document(uri)
-    document_loader, avsc_names, _, metadata, uri = validate_document(document_loader, workflowobj, uri, [], {})
-    tool = make_tool(document_loader, avsc_names, metadata, uri, LoadingContext())
-
     buffer = StringIO()
-    printdot(tool, document_loader.ctx, buffer)
+    main(argsl=['--print-dot', workflow_path], stdout=buffer)
     return buffer.getvalue()
 
 
 if __name__ == '__main__':
-    print(cwl2dot())
+    print(cwl2dot('testdata/sleep_workflow.cwl'))
