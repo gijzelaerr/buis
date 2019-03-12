@@ -73,6 +73,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+LOGOUT_REDIRECT_URL = 'scheduler:repo_list'
+LOGIN_REDIRECT_URL = 'scheduler:repo_list'
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'

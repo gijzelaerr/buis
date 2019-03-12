@@ -34,6 +34,25 @@
                     <td><b>repository:</b></td>
                     <td>{{ object.repository }}</td>
                 </tr>
+
+                <tr>
+                    <td><b>workdir:</b></td>
+                    <td>{{ object.workdir }}</td>
+                </tr>
+                <tr>
+                    <td><b>jobstore:</b></td>
+                    <td>{{ object.jobstore }}</td>
+                </tr>
+
+                {% with object.toil_status as toil_status %}
+                    {% for key, value in toil_status.items %}
+                        <tr>
+                            <td><b>{{ key }}:</b></td>
+                            <td>{{ value }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endwith %}
+
                 <tr>
                     <td><b>error_message:</b></td>
                     <td>

@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.conf import settings
 import pathlib
 import git
+from scheduler.util import toil_jobstore_info
 
 
 class Repository(models.Model):
@@ -105,6 +106,15 @@ class Workflow(models.Model):
 
     def full_job_path(self):
         return self.path() / "job.json"
+
+    def workdir(self):
+        return self.path() / 'work'
+
+    def jobstore(self):
+        return self.path() / 'job'
+
+    def toil_status(self):
+        return toil_jobstore_info(str(self.jobstore()))
 
     def stdout(self):
         try:

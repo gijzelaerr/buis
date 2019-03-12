@@ -62,10 +62,10 @@ def run_workflow(pk: int):
 
     stdout_file = str(workflow.path() / "stdout")
     stderr_file = str(workflow.path() / "stderr")
-    workdir = workflow.path() / 'work'
+    workdir = workflow.workdir()
     workdir.mkdir(parents=True, exist_ok=True)
 
-    jobstore = workflow.path() / 'job'
+    jobstore = workflow.jobstore()
     if jobstore.exists():
         rmtree(str(jobstore))
 

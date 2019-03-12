@@ -8,7 +8,10 @@ from cwl_utils.parser_v1_0 import InputArraySchema
 from pathlib import Path
 from cwltool.main import main
 from io import StringIO
-
+from toil.utils.toilStats import getStats, processData
+from toil.common import Toil
+from os import path, walk
+import pathlib
 
 mapping = {
     'null': forms.BooleanField,
@@ -21,6 +24,18 @@ mapping = {
     'File': forms.FilePathField,
     'Directory': forms.FilePathField,
 }
+
+
+def list_files(prefix: pathlib.Path, extensions=None):
+    if not extensions:
+        extensions = ['cwl']
+    for root, dirs, files in walk(str(prefix)):
+        subfolder = root[len(str(prefix))+1:]
+        for f in files:
+            if f.split('.')[-1] in extensions:
+                yield path.join(subfolder, f)
+
+
 
 
 class CwlForm(forms.Form):
@@ -74,7 +89,6 @@ class CwlForm(forms.Form):
     def back_to_cwl_job(self):
         return self.cleaned_data
 
-from cwltool.main import main
 
 def cwl2dot(workflow_path):
     """
@@ -85,5 +99,13 @@ def cwl2dot(workflow_path):
     return buffer.getvalue()
 
 
+def toil_jobstore_info(jobstore):
+    """parses a toil jobstore folder"""
+    jobStore = Toil.resumeJobStore(jobstore)
+    stats = getStats(jobStore)
+    return processData(jobStore.config, stats)
+
+
 if __name__ == '__main__':
-    print(cwl2dot('testdata/sleep_workflow.cwl'))
+    #print(cwl2dot('testdata/sleep_workflow.cwl'))
+    print(toil_jobstore_info('/home/gijs/Work/buis/scratch/workflow/23/job'))

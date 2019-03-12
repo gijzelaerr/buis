@@ -8,3 +8,4 @@ ipython
 django-debug-toolbar
 uwsgi
 cwl-utils
+ruamel.yaml<0.15

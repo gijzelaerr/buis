@@ -29,21 +29,9 @@
 
     <a class="navbar-brand mr-1" href="index.html">Buis</a>
 
-    <button class="btn btn-link btn-sm text-white order-1 order-sm-0" id="sidebarToggle" href="#">
-        <i class="fas fa-bars"></i>
-    </button>
-
     <!-- Navbar Search -->
     <form class="d-none d-md-inline-block form-inline ml-auto mr-0 mr-md-3 my-2 my-md-0">
-        <div class="input-group">
-            <input type="text" class="form-control" placeholder="Search for..." aria-label="Search"
-                   aria-describedby="basic-addon2">
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="button">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-        </div>
+
     </form>
 
     <!-- Navbar -->
@@ -64,7 +52,7 @@
 <div id="wrapper">
 
     <!-- Sidebar -->
-    <ul class="sidebar navbar-nav">
+    <ul class="sidebar navbar-nav toggled">
         <li class="nav-item{% if menu == 'repo' %} active{% endif %}">
             <a class="nav-link" href="{% url 'scheduler:repo_list' %}">
                 <i class="fab fa-github"></i>
@@ -124,7 +112,7 @@
             <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-primary" href="login.html">Logout</a>
+                <a class="btn btn-primary" href="{% url 'logout' %}">Logout</a>
             </div>
         </div>
     </div>
