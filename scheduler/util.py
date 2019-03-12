@@ -2,6 +2,7 @@
 Helper functions for using Kliko in combinaton with Django
 """
 from django import forms
+from django.conf import settings
 from cwl_utils.parser_v1_0 import InputParameter
 from typing import List, Optional
 from cwl_utils.parser_v1_0 import InputArraySchema
@@ -12,6 +13,7 @@ from toil.utils.toilStats import getStats, processData
 from toil.common import Toil
 from os import path, walk
 import pathlib
+import subprocess
 
 mapping = {
     'null': forms.BooleanField,
@@ -94,9 +96,9 @@ def cwl2dot(workflow_path):
     """
     Parses a CWL definition and return the dot representation
     """
-    buffer = StringIO()
-    main(argsl=['--print-dot', workflow_path], stdout=buffer)
-    return buffer.getvalue()
+    args = [settings.CWLTOOL_BIN, '--print-dot', '--enable-ext', workflow_path]
+    done = subprocess.run(args, check=True, stdout=subprocess.PIPE)
+    return done.stdout.decode().replace("\n", " ")
 
 
 def toil_jobstore_info(jobstore):
@@ -104,8 +106,3 @@ def toil_jobstore_info(jobstore):
     jobStore = Toil.resumeJobStore(jobstore)
     stats = getStats(jobStore)
     return processData(jobStore.config, stats)
-
-
-if __name__ == '__main__':
-    #print(cwl2dot('testdata/sleep_workflow.cwl'))
-    print(toil_jobstore_info('/home/gijs/Work/buis/scratch/workflow/23/job'))

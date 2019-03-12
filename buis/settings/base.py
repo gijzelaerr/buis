@@ -117,3 +117,4 @@ LOGGING = {
 
 
 TOIL_BIN = path.join(BASE_DIR, '.venv/bin/toil-cwl-runner')
+CWLTOOL_BIN = path.join(BASE_DIR, '.venv/bin/cwltool')

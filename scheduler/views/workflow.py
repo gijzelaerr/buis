@@ -14,7 +14,7 @@ from django.views.generic import CreateView, ListView, DeleteView, DetailView
 
 from scheduler.models import Repository, Workflow
 from scheduler.tasks import run_workflow
-from scheduler.util import cwl2dot, CwlForm, list_files, toil_jobstore_info
+from scheduler.util import cwl2dot, CwlForm, list_files
 
 
 logger = logging.getLogger(__name__)
