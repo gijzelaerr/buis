@@ -7,8 +7,6 @@ from cwl_utils.parser_v1_0 import InputParameter
 from typing import List, Optional
 from cwl_utils.parser_v1_0 import InputArraySchema
 from pathlib import Path
-from cwltool.main import main
-from io import StringIO
 from toil.utils.toilStats import getStats, processData
 from toil.common import Toil
 from os import path, walk
@@ -36,8 +34,6 @@ def list_files(prefix: pathlib.Path, extensions=None):
         for f in files:
             if f.split('.')[-1] in extensions:
                 yield path.join(subfolder, f)
-
-
 
 
 class CwlForm(forms.Form):
@@ -78,7 +74,8 @@ class CwlForm(forms.Form):
 
             self.fields[id] = type_(**params)
 
-    def __init__(self, inputs: List[InputParameter], prefix: Path, default_values: Optional[dict] = None, *args,
+    def __init__(self, inputs: List[InputParameter], prefix: Path,
+                 default_values: Optional[dict] = None, *args,
                  **kwargs):
         super().__init__(*args, **kwargs)
         if not default_values:

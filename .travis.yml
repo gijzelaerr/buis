@@ -1,4 +1,6 @@
 services:
   - docker
+install:
+    - docker build . -t gijzelaerr/buis
 script:
-  - docker build . -t gijzelaerr/buis
+  - docker run gijzelaerr/buis python3 ./manage.py test

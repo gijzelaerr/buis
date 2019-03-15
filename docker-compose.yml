@@ -1,0 +1,39 @@
+version: '3.2'
+
+volumes:
+  storage:
+
+services:
+  db:
+    image: postgres
+
+  web:
+    build: .
+    command: python3 manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - broker
+    environment:
+      - DJANGO_SETTINGS_MODULE=buis.settings.compose
+      - SECRET_KEY=topsecret
+    volumes:
+      - type: volume
+        source: storage
+        target: /code/scratch
+  broker:
+    image: rabbitmq
+
+  worker:
+    build: .
+    command: celery -A buis worker -l info
+    depends_on:
+      - broker
+    environment:
+      - DJANGO_SETTINGS_MODULE=buis.settings.compose
+      - SECRET_KEY=topsecret
+    volumes:
+      - type: volume
+        source: storage
+        target: /code/scratch

@@ -2,10 +2,8 @@ from django.test import TestCase
 from .models import Repository
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from toil.cwl import cwltoil
 from pathlib import Path
-from tempfile import NamedTemporaryFile
-import json
+
 
 USER = 'test'
 PASS = 'test'
@@ -42,13 +40,3 @@ class RepositoryIndexViewTests(TestCase):
         response = self.client.get(reverse('scheduler:repo_list'), follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(list(response.context_data['object_list'])), 2)
-
-    def test_toil(self):
-        workflow = str((HERE / "../testdata/sleep.cwl").resolve())
-        job_dict = {'seconds': 1}
-
-        with NamedTemporaryFile(mode='wt') as tf:
-            json.dump(job_dict, tf.file)
-            tf.file.flush()
-            args = [workflow, tf.name]
-            cwltoil.main(args=args)

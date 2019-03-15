@@ -2,7 +2,6 @@ import logging
 from celery import shared_task
 import git
 from scheduler.models import Repository, RepositoryStateChange, Workflow
-from toil.cwl import cwltoil
 from shutil import rmtree
 import subprocess
 import re
