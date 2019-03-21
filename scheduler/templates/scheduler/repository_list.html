@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load labels %}
+
 {% block content %}
 
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -25,7 +27,7 @@
                     <tr>
                         <th scope="row">{{ object.id }}</th>
                         <td><a href="{%  url 'scheduler:repo_detail' object.id %}">{{ object.url }}</a></td>
-                        <td>{{ object.get_state.get_state_display }}</td>
+                        <td>{{ object.get_state.get_state_display|label }}</td>
                         <td>
                             <a href="{%  url 'scheduler:repo_delete' object.id %}"><button type="button" class="btn btn-danger">Delete</button></a>
                             <a href="{% url 'scheduler:repo_update' object.id %}"><button type="button" class="btn btn-info">Update</button></a>

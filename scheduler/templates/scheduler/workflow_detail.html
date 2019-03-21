@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load labels %}
+
 {% block content %}
 
     <h2>Workflow details</h2>
@@ -24,7 +26,7 @@
                 </tr>
                 <tr>
                     <td><b>state:</b></td>
-                    <td>{{ object.get_state_display }}</td>
+                    <td>{{ object.get_state_display|label }}</td>
                 </tr>
                 <tr>
                     <td><b>cwl_path:</b></td>

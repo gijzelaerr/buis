@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load labels %}
+
 {% block content %}
     <h2>Workflows</h2>
 
@@ -8,8 +10,9 @@
             <table class="table table-striped table-sm">
                 <thead>
                 <th scope="col">id</th>
-                <th scope="col">repository</th>
+
                 <th scope="col">CWL file</th>
+                <th scope="col">repository</th>
                 <th scope="col">added</th>
                 <th scope="col">state</th>
                 <th scope="col">actions</th>
@@ -18,10 +21,10 @@
                 {% for workflow in workflow_list %}
                     <tr>
                         <td><a href="{% url 'scheduler:workflow_detail' workflow.id %}">{{ workflow.id }}</a></td>
-                        <td><a href="{% url 'scheduler:repo_detail' workflow.repository.id %}">{{ workflow.repository }}</a></td>
-                        <td>{{ workflow.cwl_path }}</td>
+                        <td><a href="{% url 'scheduler:workflow_detail' workflow.id %}">{{ workflow.cwl_path }}</a></td>
+                        <td>{{ workflow.repository }}</td>
                         <td>{{ workflow.moment }}</td>
-                        <td>{{ workflow.get_state_display }}</td>
+                        <td>{{ workflow.get_state_display|label }}</td>
                         <td>
                             <a href="{% url 'scheduler:workflow_delete' workflow.id %}"><button type="button" class="btn btn-danger btn-sm">Delete</button></a>
                             <a href="{% url 'scheduler:workflow_restart' workflow.id %}"><button type="button" class="btn btn-success btn-sm">Restart</button></a>
