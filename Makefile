@@ -3,7 +3,7 @@
 all: django-server
 
 .venv/:
-	virtualenv -p python3 .venv/
+	python3 -m venv .venv/
 
 .venv/installed: .venv/ requirements.txt
 	.venv/bin/pip install -r requirements.txt
