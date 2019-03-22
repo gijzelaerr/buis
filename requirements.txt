@@ -1,13 +1,11 @@
-#toil[all]
 django>=2.1,<2.2
 celery>=4.2,<4.3
 django-celery-results
 djangorestframework
 gitpython
-ipython
 django-debug-toolbar
 uwsgi
 cwl-utils
 ruamel.yaml<0.15
 psycopg2-binary
-git+git://github.com/DataBiosphere/toil.git@5c60f268fa6027033aa6352abaf86d1ab2aae0ae#egg=toil[all]
+git+git://github.com/DataBiosphere/toil.git@c9768b1eac9e6773249fa3a09e4f864992becb02#egg=toil[all]
