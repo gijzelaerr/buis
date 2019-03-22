@@ -8,4 +8,5 @@ uwsgi
 cwl-utils
 ruamel.yaml<0.15
 psycopg2-binary
-git+git://github.com/DataBiosphere/toil.git@c9768b1eac9e6773249fa3a09e4f864992becb02#egg=toil[all]
+# todo: for now use toil from this https://github.com/DataBiosphere/toil/pull/2533
+git+git://github.com/DataBiosphere/toil.git@60afad679288a195fc4e5310ee8a5c8d12b60581#egg=toil[all]

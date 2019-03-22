@@ -114,8 +114,7 @@ class Workflow(models.Model):
         return self.path() / 'job'
 
     def toil_status(self):
-        return None
-        #return toil_jobstore_info(str(self.jobstore()))
+        return toil_jobstore_info(str(self.jobstore()))
 
     def stdout(self):
         try:
