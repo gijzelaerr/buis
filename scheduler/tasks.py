@@ -5,6 +5,8 @@ from scheduler.models import Repository, RepositoryStateChange, Workflow
 from shutil import rmtree
 import subprocess
 import re
+from sys import prefix
+from os import environ
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
@@ -68,6 +70,8 @@ def run_workflow(pk: int):
     if jobstore.exists():
         rmtree(str(jobstore))
 
+    path = f"{environ['PATH']}:{prefix}/bin"
+
     with open(stdout_file, mode='wt') as stdout:
         with open(stderr_file, mode='wt') as stderr:
             args = [
@@ -78,8 +82,7 @@ def run_workflow(pk: int):
                 str(workflow.full_cwl_path()),
                 str(workflow.full_job_path())]
             try:
-                 subprocess.run(args, check=True, stdout=stdout, stderr=stderr)
-                # cwltoil.main(args, stdout=stdout)
+                subprocess.run(args, check=True, stdout=stdout, stderr=stderr, env={'PATH': path})
             except Exception as e:
                 logger.error(e)
                 workflow.error_message = insert_newliners(str(e))

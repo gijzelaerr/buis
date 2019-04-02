@@ -89,7 +89,10 @@ class CwlForm(forms.Form):
         return self.cleaned_data
 
 
-def cwl2dot(workflow_path):
+from toil.jobStores.abstractJobStore import NoSuchJobStoreException
+
+
+def cwl2dot(workflow_path: str) -> str:
     """
     Parses a CWL definition and return the dot representation
     """
@@ -98,8 +101,12 @@ def cwl2dot(workflow_path):
     return done.stdout.decode().replace("\n", " ")
 
 
-def toil_jobstore_info(jobstore):
+def toil_jobstore_info(jobstore: str) -> dict:
     """parses a toil jobstore folder"""
-    jobStore = Toil.resumeJobStore(jobstore)
-    stats = getStats(jobStore)
-    return processData(jobStore.config, stats)
+    try:
+        jobStore = Toil.resumeJobStore(jobstore)
+    except NoSuchJobStoreException:
+        return {}
+    else:
+        stats = getStats(jobStore)
+        return processData(jobStore.config, stats)
