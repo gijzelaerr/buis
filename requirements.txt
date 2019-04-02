@@ -1,12 +1,13 @@
+# todo: for now use toil from this https://github.com/DataBiosphere/toil/pull/2533
+#toil[cwl]
+git+git://github.com/DataBiosphere/toil.git@60afad679288a195fc4e5310ee8a5c8d12b60581#egg=toil[cwl]
 django>=2.1,<2.2
 celery>=4.2,<4.3
 django-celery-results
 djangorestframework
 gitpython
 django-debug-toolbar
-uwsgi
-cwl-utils
-ruamel.yaml<0.15
 psycopg2-binary
-# todo: for now use toil from this https://github.com/DataBiosphere/toil/pull/2533
-git+git://github.com/DataBiosphere/toil.git@60afad679288a195fc4e5310ee8a5c8d12b60581#egg=toil[all]
+cwl-utils
+requests==2.18.4
+ruamel.yaml<0.15
