@@ -11,3 +11,9 @@ psycopg2-binary
 cwl-utils
 requests==2.18.4
 ruamel.yaml<0.15
+astropy
+APLpy
+matplotlib
+filemagic
+
+

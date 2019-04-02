@@ -92,6 +92,7 @@
                 <tr>
                     <td>{{ result.name }}</td>
                     <td>{{ result.stat.st_size|humanize }}</td>
+                    <td><a href="{% url 'scheduler:viewer_guesstype' pk=object.id path=result.name %}"><button class="btn btn-xs">view</button></a></td>
                 </tr>
             {% endfor %}
             </tbody>

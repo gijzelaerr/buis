@@ -120,7 +120,17 @@ class Workflow(models.Model):
         return toil_jobstore_info(str(self.jobstore()))
 
     def results(self):
-        return self.outdir().iterdir()
+        outdir = self.outdir()
+        if outdir.exists():
+            return outdir.iterdir()
+        else:
+            return []
+
+    def get_result(self, file_):
+        fullpath = (self.outdir() / file_).resolve()
+        assert (fullpath.exists())
+        assert (self.outdir() in fullpath.parents)
+        return fullpath
 
     def stdout(self):
         try:

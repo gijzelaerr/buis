@@ -28,6 +28,7 @@
                         <td>
                             <a href="{% url 'scheduler:workflow_delete' workflow.id %}"><button type="button" class="btn btn-danger btn-sm">Delete</button></a>
                             <a href="{% url 'scheduler:workflow_restart' workflow.id %}"><button type="button" class="btn btn-success btn-sm">Restart</button></a>
+                            <a href="{% url 'scheduler:viewer_overview' workflow.id %}"><button type="button" class="btn btn-info btn-sm">Viewer</button></a>
                         </td>
                     </tr>
                 {% endfor %}
