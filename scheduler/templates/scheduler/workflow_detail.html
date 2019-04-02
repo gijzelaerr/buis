@@ -1,86 +1,102 @@
 {% extends "base.html" %}
 
 {% load labels %}
+{% load humanize %}
 
 {% block content %}
 
     <h2>Workflow details</h2>
 
-    {% if object %}
-        <a href="{% url 'scheduler:workflow_restart' object.id %}">
-            <button type="button" class="btn btn-success btn-sm">Restart</button>
-        </a>
-        <a href="{% url 'scheduler:workflow_delete' workflow.id %}">
-            <button type="button" class="btn btn-danger btn-sm">Delete</button>
-        </a>
-        <div class="table-responsive">
-            <table class="table table-striped table-sm">
-                <thead>
-                <th scope="col">key</th>
-                <th scope="col">value</th>
-                </thead>
-                <tbody>
-                <tr>
-                    <td><b>moment:</b></td>
-                    <td>{{ object.moment }}</td>
-                </tr>
-                <tr>
-                    <td><b>state:</b></td>
-                    <td>{{ object.get_state_display|label }}</td>
-                </tr>
-                <tr>
-                    <td><b>cwl_path:</b></td>
-                    <td>{{ object.cwl_path }}</td>
-                </tr>
-                <tr>
-                    <td><b>repository:</b></td>
-                    <td>{{ object.repository }}</td>
-                </tr>
+    <a href="{% url 'scheduler:workflow_restart' object.id %}">
+        <button type="button" class="btn btn-success btn-sm">Restart</button>
+    </a>
+    <a href="{% url 'scheduler:workflow_delete' workflow.id %}">
+        <button type="button" class="btn btn-danger btn-sm">Delete</button>
+    </a>
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <th scope="col">key</th>
+            <th scope="col">value</th>
+            </thead>
+            <tbody>
+            <tr>
+                <td><b>moment:</b></td>
+                <td>{{ object.moment }}</td>
+            </tr>
+            <tr>
+                <td><b>state:</b></td>
+                <td>{{ object.get_state_display|label }}</td>
+            </tr>
+            <tr>
+                <td><b>cwl_path:</b></td>
+                <td>{{ object.cwl_path }}</td>
+            </tr>
+            <tr>
+                <td><b>repository:</b></td>
+                <td><a href="{% url 'scheduler:repo_detail' object.repository.id %}">{{ object.repository }}</a></td>
+            </tr>
 
-                <tr>
-                    <td><b>workdir:</b></td>
-                    <td>{{ object.workdir }}</td>
-                </tr>
-                <tr>
-                    <td><b>jobstore:</b></td>
-                    <td>{{ object.jobstore }}</td>
-                </tr>
+            <tr>
+                <td><b>workdir:</b></td>
+                <td>{{ object.workdir }}</td>
+            </tr>
+            <tr>
+                <td><b>jobstore:</b></td>
+                <td>{{ object.jobstore }}</td>
+            </tr>
 
-                {% with object.toil_status as toil_status %}
-                    {% for key, value in toil_status.items %}
-                        <tr>
-                            <td><b>{{ key }}:</b></td>
-                            <td>{{ value }}</td>
-                        </tr>
-                    {% endfor %}
-                {% endwith %}
+            {% with object.toil_status as toil_status %}
+                {% for key, value in toil_status.items %}
+                    <tr>
+                        <td><b>{{ key }}:</b></td>
+                        <td>{{ value }}</td>
+                    </tr>
+                {% endfor %}
+            {% endwith %}
 
-                <tr>
-                    <td><b>error_message:</b></td>
-                    <td>
-                        <pre>{{ object.error_message }}</pre>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>stdout:</b></td>
-                    <td>
-                        <pre>{{ object.stdout }}</pre>
-                    </td>
-                </tr>
-                <tr>
-                    <td><b>stderr:</b></td>
-                    <td>
-                        <pre>{{ object.stderr }}</pre>
-                    </td>
-                </tr>
+            <tr>
+                <td><b>error_message:</b></td>
+                <td>
+                    <pre>{{ object.error_message }}</pre>
+                </td>
+            </tr>
+            <tr>
+                <td><b>stdout:</b></td>
+                <td>
+                    <pre>{{ object.stdout }}</pre>
+                </td>
+            </tr>
+            <tr>
+                <td><b>stderr:</b></td>
+                <td>
+                    <pre>{{ object.stderr }}</pre>
+                </td>
+            </tr>
 
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h3>Results</h3>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-sm">
+            <thead>
+            <th scope="col">name</th>
+            <th scope="col">size</th>
+            </thead>
+            <tbody>
+            {% for result in object.results %}
+                <tr>
+                    <td>{{ result.name }}</td>
+                    <td>{{ result.stat.st_size|humanize }}</td>
                 </tr>
-                </tbody>
-            </table>
-        </div>
-    {% else %}
-        No Workflows.
-    {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
 
 {% endblock %}

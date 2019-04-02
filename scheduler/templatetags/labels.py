@@ -17,9 +17,10 @@ mapping = {
     'error': danger,
     'ready': success,
     'outdated': warning,
+    'done': success,
 }
 
 
 @register.filter(is_safe=True)
 def label(value):
-    return  mark_safe(mapping.get(value.lower(), primary).format(value))
+    return mark_safe(mapping.get(value.lower(), primary).format(value))

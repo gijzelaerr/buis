@@ -92,13 +92,18 @@ class CwlForm(forms.Form):
 from toil.jobStores.abstractJobStore import NoSuchJobStoreException
 
 
-def cwl2dot(workflow_path: str) -> str:
+def cwl2dot(workflow_path: str) -> (str, str):
     """
     Parses a CWL definition and return the dot representation
     """
     args = [settings.CWLTOOL_BIN, '--print-dot', '--enable-ext', workflow_path]
-    done = subprocess.run(args, check=True, stdout=subprocess.PIPE)
-    return done.stdout.decode().replace("\n", " ")
+    done = subprocess.run(args, check=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout = done.stdout.decode().replace("\n", " ")
+    if done.returncode == 0:
+        error = False
+    else:
+        error = done.stderr.decode().replace("\n", " ")
+    return stdout, error
 
 
 def toil_jobstore_info(jobstore: str) -> dict:

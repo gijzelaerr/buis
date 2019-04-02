@@ -27,10 +27,8 @@ def workflow_visualize(request, repo_id, cwl_path):
     full_cwl_path = (repo_path / unquote(cwl_path)).resolve()
     assert(full_cwl_path.exists())
     assert(repo_path in full_cwl_path.parents)
-
-    dot = cwl2dot(str(full_cwl_path))
-
-    context = {'repo': repo, 'cwl_path': cwl_path, 'dot': dot}
+    dot, error = cwl2dot(str(full_cwl_path))
+    context = {'repo': repo, 'cwl_path': cwl_path, 'dot': dot, 'error': error}
     return render(request, 'scheduler/workflow_visualize.html', context)
 
 

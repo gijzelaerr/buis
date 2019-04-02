@@ -64,9 +64,11 @@ def run_workflow(pk: int):
     stdout_file = str(workflow.path() / "stdout")
     stderr_file = str(workflow.path() / "stderr")
     workdir = workflow.workdir()
+    jobstore = workflow.jobstore()
+
+    # toil is a bit needy and doesn't start if workdir doesnt exists or jobstore *does* exist...
     workdir.mkdir(parents=True, exist_ok=True)
 
-    jobstore = workflow.jobstore()
     if jobstore.exists():
         rmtree(str(jobstore))
 
@@ -79,10 +81,11 @@ def run_workflow(pk: int):
                 '--jobStore', str(jobstore),
                 '--workDir', str(workdir),
                 '--stats',
+                '--outdir', str(workflow.outdir()),
                 str(workflow.full_cwl_path()),
                 str(workflow.full_job_path())]
             try:
-                subprocess.run(args, check=True, stdout=stdout, stderr=stderr, env={'PATH': path})
+                subprocess.run(args, check=False, stdout=stdout, stderr=stderr, env={'PATH': path})
             except Exception as e:
                 logger.error(e)
                 workflow.error_message = insert_newliners(str(e))

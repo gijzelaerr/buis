@@ -113,8 +113,14 @@ class Workflow(models.Model):
     def jobstore(self):
         return self.path() / 'job'
 
+    def outdir(self):
+        return self.path() / 'outdir'
+
     def toil_status(self):
         return toil_jobstore_info(str(self.jobstore()))
+
+    def results(self):
+        return self.outdir().iterdir()
 
     def stdout(self):
         try:
