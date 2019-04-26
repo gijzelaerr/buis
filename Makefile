@@ -1,6 +1,10 @@
 .PHONY: django-server django-migrate setup django-test celery-worker npm-rundev docker npm-cypress
 
+# by default we want to run the django server
 all: django-server
+
+
+## General setup make targets
 
 .venv/:
 	python3 -m venv .venv/
@@ -15,6 +19,8 @@ all: django-server
 
 setup: .venv/installed
 
+
+## Django related make targets
 
 django-server: setup
 	.venv/bin/python ./manage.py runserver
@@ -42,6 +48,8 @@ celery-worker: setup
 	DJANGO_SETTINGS_MODULE="buis.settings.dev" .venv/bin/celery -A buis worker -l info
 
 
+## Javascript frontend related make targets
+
 node_modules/:
 	npm update
 
@@ -52,12 +60,13 @@ npm-cypress: node_modules/
 	npm run cypress
 
 
+## Docker related make targets
+
 docker:
 	docker build . -t gijzelaerr/buis
 
 docker-shell:
-	docker run -ti gijzelaerr/buis bash
-
+	docker run -ti  -v /var/run/docker.sock:/var/run/docker.sock gijzelaerr/buis bash
 
 docker-compose-up: .venv/bin/docker-compose
 	.venv/bin/docker-compose up

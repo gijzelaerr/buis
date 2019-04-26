@@ -31,10 +31,6 @@ for a normal deployment:
  * virtualenv
  * rabbitmq
  
-For javascript (react) development:
- 
- * npm
- 
 on OSX with homebrew:
 ```
 $ brew install python3 rabbitmq pyenv-virtualenv npm
@@ -45,3 +41,7 @@ on debian/ubuntu:
 ```
 $ sudo apt-get install rabbitmq-server python3 virtualenv npm  python3-dev
 ```
+
+Explore the various make targets in the `Makefile` to figure out how to start the various services. To access the
+webinterface you only need to start the Django server, but to schedule tasks you need to start a celery worker. By
+default the celery worker is configured to connect to the rabbit MQ message broker.

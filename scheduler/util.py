@@ -12,6 +12,7 @@ from toil.common import Toil
 from os import path, walk
 import pathlib
 import subprocess
+from toil.jobStores.abstractJobStore import NoSuchJobStoreException
 
 mapping = {
     'null': forms.BooleanField,
@@ -30,7 +31,7 @@ def list_files(prefix: pathlib.Path, extensions=None):
     if not extensions:
         extensions = ['cwl']
     for root, dirs, files in walk(str(prefix)):
-        subfolder = root[len(str(prefix))+1:]
+        subfolder = root[len(str(prefix)) + 1:]
         for f in files:
             if f.split('.')[-1] in extensions:
                 yield path.join(subfolder, f)
@@ -87,9 +88,6 @@ class CwlForm(forms.Form):
 
     def back_to_cwl_job(self):
         return self.cleaned_data
-
-
-from toil.jobStores.abstractJobStore import NoSuchJobStoreException
 
 
 def cwl2dot(workflow_path: str) -> (str, str):

@@ -16,7 +16,6 @@ from scheduler.models import Repository, Workflow
 from scheduler.tasks import run_workflow
 from scheduler.util import cwl2dot, CwlForm, list_files
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -25,8 +24,8 @@ def workflow_visualize(request, repo_id, cwl_path):
     repo = Repository.objects.get(pk=repo_id)
     repo_path = repo.path()
     full_cwl_path = (repo_path / unquote(cwl_path)).resolve()
-    assert(full_cwl_path.exists())
-    assert(repo_path in full_cwl_path.parents)
+    assert (full_cwl_path.exists())
+    assert (repo_path in full_cwl_path.parents)
     dot, error = cwl2dot(str(full_cwl_path))
     context = {'repo': repo, 'cwl_path': cwl_path, 'dot': dot, 'error': error}
     return render(request, 'scheduler/workflow_visualize.html', context)
@@ -37,8 +36,8 @@ def workflow_job(request, repo_id, cwl_path):
     repo = Repository.objects.get(pk=repo_id)
     repo_path = repo.path()
     full_cwl_path = (repo_path / unquote(cwl_path)).resolve()
-    assert(full_cwl_path.exists())
-    assert(repo_path in full_cwl_path.parents)
+    assert (full_cwl_path.exists())
+    assert (repo_path in full_cwl_path.parents)
     files = list_files(repo.path(), extensions=['yml', 'yaml'])
 
     jobs = {}
@@ -59,14 +58,14 @@ def workflow_parse(request, repo_id, cwl_path):
     repo = Repository.objects.get(pk=repo_id)
     repo_path = repo.path()
     full_cwl_path = repo_path / unquote(unquote(cwl_path))
-    assert(full_cwl_path.exists())
-    assert(repo_path in full_cwl_path.parents)
+    assert (full_cwl_path.exists())
+    assert (repo_path in full_cwl_path.parents)
 
     job = {}
     if 'job' in request.GET:
         job_path = (repo_path / request.GET['job']).resolve()
-        assert(job_path.exists())
-        assert(repo_path in job_path.parents)
+        assert (job_path.exists())
+        assert (repo_path in job_path.parents)
         try:
             with open(job_path) as f:
                 job = yaml.load(f)
@@ -82,7 +81,7 @@ def workflow_parse(request, repo_id, cwl_path):
             workflow.save()
 
             with open(workflow.full_job_path(), mode='wt') as job:
-                    json.dump(form.back_to_cwl_job(), job)
+                json.dump(form.back_to_cwl_job(), job)
 
             run_workflow.delay(pk=workflow.id)
 
@@ -106,7 +105,7 @@ def workflow_run(_, repo_id, cwl_path):
     repo = Repository.objects.get(pk=repo_id)
 
     full_cwl_path = path.abspath(path.join(repo.path(), unquote(cwl_path)))
-    assert(full_cwl_path.startswith(repo.path()))
+    assert (full_cwl_path.startswith(repo.path()))
 
     workflow = Workflow(repository=repo)
     workflow.save()

@@ -1,7 +1,10 @@
-.venv/
-*.pyc
+db/
 db.sqlite3
 node_modules
+*.pyc
 scratch/
-db/
+scratch/*/
+static/*
 testdata/
+.venv*/
+workflows/*
