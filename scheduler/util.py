@@ -6,13 +6,15 @@ from django.conf import settings
 from cwl_utils.parser_v1_0 import InputParameter
 from typing import List, Optional
 from cwl_utils.parser_v1_0 import InputArraySchema
-from pathlib import Path
 from toil.utils.toilStats import getStats, processData
 from toil.common import Toil
 from os import path, walk
-import pathlib
+from pathlib import Path
 import subprocess
 from toil.jobStores.abstractJobStore import NoSuchJobStoreException
+from ruamel import yaml
+import logging
+
 
 mapping = {
     'null': forms.BooleanField,
@@ -22,12 +24,12 @@ mapping = {
     'float': forms.FloatField,
     'double': forms.FloatField,
     'string': forms.CharField,
-    'File': forms.FilePathField,
-    'Directory': forms.FilePathField,
+    'File': forms.ChoiceField,
+    'Directory': forms.ChoiceField,
 }
 
 
-def list_files(prefix: pathlib.Path, extensions=None):
+def list_files(prefix: Path, extensions=None):
     if not extensions:
         extensions = ['cwl']
     for root, dirs, files in walk(str(prefix)):
@@ -35,6 +37,30 @@ def list_files(prefix: pathlib.Path, extensions=None):
         for f in files:
             if f.split('.')[-1] in extensions:
                 yield path.join(subfolder, f)
+
+
+# todo: merge this with other list_files
+def list_files2(prefix: Path):
+    for i in prefix.rglob('*'):
+        relative = i.relative_to(prefix)
+        if not str(relative).startswith('.git'):
+            yield relative
+
+
+def parse_job(job: Path, repo: Path):
+    with open(str(job)) as f:
+        loaded = yaml.load(f)
+
+    cleaned = {}
+    for key, value in loaded.items():
+        if type(value) is dict:
+            if value['class'] in ['File', 'Directory']:
+                cleaned[key] = str((job.parent / Path(value['path'])).resolve().relative_to(repo))
+            else:
+                cleaned[key] = value
+        else:
+            cleaned[key] = value
+    return cleaned
 
 
 class CwlForm(forms.Form):
@@ -62,10 +88,9 @@ class CwlForm(forms.Form):
 
             id = input.id.split('#')[-1]
 
-            if type_ is forms.FilePathField:
-                params['path'] = str(prefix)
-                params['recursive'] = True
-                params['match'] = "^(?!\.git|\\.).*"
+            if input.type in ['File', 'Directory']:
+                files = list(list_files2(prefix))
+                params['choices'] = zip(files, files)
 
             if id in default_values:
                 params['initial'] = default_values[id]

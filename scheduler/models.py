@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
+from urllib.parse import unquote
 import pathlib
 import git
 from scheduler.util import toil_jobstore_info
@@ -49,6 +50,12 @@ class Repository(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.path().mkdir(parents=True, exist_ok=True)
+
+    def get_content(self, subpath):
+        full_path = (self.path() / unquote(unquote(subpath))).resolve()
+        assert (full_path.exists())
+        assert (self.path() in full_path.parents)
+        return full_path
 
 
 class RepositoryStateChange(models.Model):
