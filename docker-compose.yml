@@ -22,6 +22,9 @@ services:
       - type: volume
         source: storage
         target: /code/scratch
+      - /var/run/docker.pid:/var/run/docker.pid
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker:/var/lib/docker
   broker:
     image: rabbitmq
 
@@ -37,3 +40,6 @@ services:
       - type: volume
         source: storage
         target: /code/scratch
+      - /var/run/docker.pid:/var/run/docker.pid
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker:/var/lib/docker
