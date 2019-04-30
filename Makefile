@@ -14,7 +14,7 @@ all: django-server
 	touch .venv/installed
 
 .venv/bin/docker-compose: .venv/
-	curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-Linux-x86_64" -o .venv/bin/docker-compose
+	curl -L https://github.com/docker/compose/releases/download/1.24.0/docker-compose-`uname -s`-`uname -m` -o .venv/bin/docker-compose
 	chmod 755 .venv/bin/docker-compose
 
 setup: .venv/installed
