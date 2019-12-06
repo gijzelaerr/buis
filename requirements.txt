@@ -1,6 +1,4 @@
-# todo: for now use toil from this https://github.com/DataBiosphere/toil/pull/2533
-#toil[cwl]
-git+git://github.com/DataBiosphere/toil.git@60afad679288a195fc4e5310ee8a5c8d12b60581#egg=toil[cwl]
+toil[cwl]
 django>=2.1,<2.2
 celery>=4.2,<4.3
 django-celery-results
@@ -9,8 +7,8 @@ gitpython
 django-debug-toolbar
 psycopg2-binary
 cwl-utils
-requests==2.18.4
-ruamel.yaml<=0.15.77,>=0.12.4
+requests
+ruamel.yaml<=0.15.97,>=0.12.4
 astropy
 APLpy
 matplotlib
