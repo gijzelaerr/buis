@@ -77,7 +77,7 @@ def workflow_parse(request, repo_id, cwl_path):
             workflow.save()
 
             with open(workflow.full_job_path(), mode='wt') as job:
-                json.dump(form.back_to_cwl_job(), job)
+                json.dump(form.back_to_cwl_job(repo.path()), job)
 
             run_workflow.delay(pk=workflow.id)
 

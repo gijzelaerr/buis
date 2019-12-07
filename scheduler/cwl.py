@@ -79,7 +79,7 @@ class CwlForm(forms.Form):
         self.prefix = prefix
         self.add_fields(inputs=inputs, default_values=default_values, prefix=prefix)
 
-    def back_to_cwl_job(self):
+    def back_to_cwl_job(self, prefix: Path = None):
         """
         Prepares the cleaned form data for serialisation to a job file.
         """
@@ -88,6 +88,8 @@ class CwlForm(forms.Form):
             type_ = self.types[k]
             # Files and directories are a bit more needy so require special formatting
             if type_ in ('Directory', 'File'):
+                if prefix:
+                    v = str(prefix / v)
                 formatted[k] = {'class': type_, 'path': v}
             else:
                 formatted[k] = v
