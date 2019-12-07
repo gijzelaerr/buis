@@ -61,6 +61,13 @@
                     <pre>{{ object.error_message }}</pre>
                 </td>
             </tr>
+
+            <tr>
+                <td><b>command:</b></td>
+                <td>
+                    <pre>{{ object.command }}</pre>
+                </td>
+            </tr>
             <tr>
                 <td><b>stdout:</b></td>
                 <td>
@@ -93,7 +100,9 @@
                 <tr>
                     <td>{{ result.name }}</td>
                     <td>{{ result.stat.st_size|humanize }}</td>
-                    <td><a href="{% url 'scheduler:viewer_guesstype' pk=object.id path=result.name %}"><button class="btn btn-xs">view</button></a></td>
+                    <td><a href="{% url 'scheduler:viewer_guesstype' pk=object.id path=result.name %}">
+                        <button class="btn btn-xs">view</button>
+                    </a></td>
                 </tr>
             {% endfor %}
             </tbody>

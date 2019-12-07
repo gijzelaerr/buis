@@ -84,6 +84,7 @@ def run_workflow(pk: int):
                 '--outdir', str(workflow.outdir()),
                 str(workflow.full_cwl_path()),
                 str(workflow.full_job_path())]
+            workflow.command = " ".join(args)
             try:
                 subprocess.run(args, check=False, stdout=stdout, stderr=stderr, env={'PATH': path})
             except Exception as e:

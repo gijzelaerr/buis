@@ -104,6 +104,7 @@ class Workflow(models.Model):
     state = models.CharField(max_length=2, choices=STATE_CHOICES, default=ADDED)
     cwl_path = models.CharField(max_length=100)
     error_message = models.TextField(blank=True)
+    command = models.CharField(max_length=1000)
 
     def path(self):
         return pathlib.Path(settings.WORKFLOW_DIR) / str(self.pk)
