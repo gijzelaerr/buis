@@ -13,13 +13,13 @@ from django.conf import settings
 
 import matplotlib
 
-matplotlib.use('agg')
 import matplotlib.pyplot
 import aplpy
 import astropy
 
 from scheduler.models import Workflow
 
+matplotlib.use('agg')
 astropy.log.setLevel('ERROR')
 logger = logging.getLogger(__name__)
 filemagic = magic.Magic()  # flags=magic.MAGIC_MIME_TYPE)
@@ -119,16 +119,36 @@ class SomethingView(DetailView):
             return HttpResponseRedirect(reverse('scheduler:viewer_fits',
                                                 kwargs={'pk': self.object.id,
                                                         'path': self.kwargs['path']}))
-        if type_.startswith("ASCII text") or type_.startswith('UTF-8 Unicode text'):
+        if type_.startswith("ASCII text") or \
+                type_.startswith('UTF-8 Unicode text'):
             return HttpResponseRedirect(reverse('scheduler:viewer_text',
                                                 kwargs={'pk': self.object.id,
                                                         'path': self.kwargs['path']}))
-        if type_.startswith('PNG image data') or type_.startswith('JPEG image data'):
-            return HttpResponseRedirect('/'.join([settings.MEDIA_URL,
-                                                  self.object.results_dir,
-                                                  self.kwargs['path']]))
+
+        if type_.startswith('PNG image data') or \
+                type_.startswith('JPEG image data') or \
+                type_.startswith('HTML document'):
+            return HttpResponseRedirect(f"{self.object.public_serve()}/outdir/{self.kwargs['path']}")
 
         return super(SomethingView, self).render_to_response(context)
+
+
+class RawView(DetailView):
+    model = Workflow
+    template_name = 'viewer/textfile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        path = self.kwargs['path']
+        fullpath = f"{self.object.outdir()}/{path}"
+
+        with open(fullpath, 'r') as f:
+            context['path'] = path
+            context['content'] = ''.join(f.readlines())
+        return context
+
+    def render_to_response(self, context, **response_kwargs):
+        return HttpResponse(context['content'], content_type='application/xhtml+xml')
 
 
 class TextView(DetailView):
@@ -138,7 +158,7 @@ class TextView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(TextView, self).get_context_data(**kwargs)
         path = self.kwargs['path']
-        fullpath = str(self.object.outdir())
+        fullpath = f"{self.object.outdir()}/{path}"
 
         with open(fullpath, 'r') as f:
             context['path'] = path

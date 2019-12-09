@@ -70,7 +70,7 @@ class CwlForm(forms.Form):
                 params['initial'] = input.default
 
             if type(input.type) is InputArraySchema:
-                params['initial'] = str(params['initial'])[1:-1]
+                params['initial'] = ",".join(str(i) for i in params['initial'])
             params['label'] = input.label
 
             self.types[id] = type_

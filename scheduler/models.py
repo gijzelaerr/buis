@@ -116,7 +116,7 @@ class Workflow(models.Model):
         return self.path() / "job.json"
 
     def workdir(self):
-        return self.path() / 'work'
+        return self.path() / 'work/'
 
     def jobstore(self):
         return self.path() / 'job'
@@ -155,3 +155,6 @@ class Workflow(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.path().mkdir(parents=True, exist_ok=True)
+
+    def public_serve(self):
+        return f"{settings.MEDIA_URL}/workflow/{self.id}/"
