@@ -19,6 +19,7 @@ mapping = {
     'File': forms.ChoiceField,
     'Directory': forms.ChoiceField,
     'enum': forms.ChoiceField,
+    'array': forms.CharField,
 }
 
 
@@ -42,8 +43,7 @@ class CwlForm(forms.Form):
                 type_ = input.type[1]
                 params['required'] = False
             elif type(input.type) is InputArraySchema:
-                # todo, add array type
-                type_ = input.type.items
+                type_ = 'array'
             elif input.type.type == 'enum':
                 type_ = input.type.type
                 choices = [s[len(input.type.name) + 1:] for s in input.type.symbols]
