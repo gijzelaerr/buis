@@ -74,16 +74,30 @@ def run_workflow(pk: int):
 
     path = f"{environ['PATH']}:{prefix}/bin"
 
+    if settings.CWL_RUNNER == 'toil':
+        args = [
+            settings.TOIL_BIN,
+            '--jobStore', str(jobstore),
+            '--workDir', str(workdir),
+            '--stats',
+            '--outdir', str(workflow.outdir()),
+            str(workflow.full_cwl_path()),
+            str(workflow.full_job_path())
+        ]
+    elif settings.CWL_RUNNER == 'cwltool':
+        args = [
+            settings.CWLTOOL_BIN,
+            '--tmpdir', str(workdir),
+            '--cachedir', settings.CWL_CACHE,
+            '--outdir', str(workflow.outdir()),
+            str(workflow.full_cwl_path()),
+            str(workflow.full_job_path())
+        ]
+    else:
+        raise Exception(f"unknown CWL runner: {settings.CWL_RUNNER}")
+
     with open(stdout_file, mode='wt') as stdout:
         with open(stderr_file, mode='wt') as stderr:
-            args = [
-                settings.TOIL_BIN,
-                '--jobStore', str(jobstore),
-                '--workDir', str(workdir),
-                '--stats',
-                '--outdir', str(workflow.outdir()),
-                str(workflow.full_cwl_path()),
-                str(workflow.full_job_path())]
             workflow.command = " ".join(args)
             try:
                 subprocess.run(args, check=False, stdout=stdout, stderr=stderr, env={'PATH': path})

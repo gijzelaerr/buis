@@ -29,7 +29,7 @@ def list_files2(prefix: Path):
 
 def parse_job(job: Path, repo: Path):
     with open(str(job)) as f:
-        loaded = yaml.load(f)
+        loaded = yaml.safe_load(f)
 
     cleaned = {}
     for key, value in loaded.items():
