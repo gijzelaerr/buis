@@ -19,7 +19,12 @@ mapping = {
     'File': forms.ChoiceField,
     'Directory': forms.ChoiceField,
     'enum': forms.ChoiceField,
-    'array': forms.CharField,
+    'boolean_array': forms.CharField,
+    'string_array': forms.CharField,
+    'int_array': forms.CharField,
+    'float_array': forms.CharField,
+    'Directory_array': forms.CharField,
+    'File_array': forms.CharField,
 }
 
 
@@ -43,7 +48,7 @@ class CwlForm(forms.Form):
                 type_ = input.type[1]
                 params['required'] = False
             elif type(input.type) is InputArraySchema:
-                type_ = 'array'
+                type_ = input.type.items + '_array'
             elif input.type.type == 'enum':
                 type_ = input.type.type
                 choices = [s[len(input.type.name) + 1:] for s in input.type.symbols]
@@ -63,6 +68,9 @@ class CwlForm(forms.Form):
                 params['initial'] = default_values[id]
             else:
                 params['initial'] = input.default
+
+            if type(input.type) is InputArraySchema:
+                params['initial'] = str(params['initial'])[1:-1]
             params['label'] = input.label
 
             self.types[id] = type_
@@ -91,8 +99,17 @@ class CwlForm(forms.Form):
                 if prefix:
                     v = str(prefix / v)
                 formatted[k] = {'class': type_, 'path': v}
+            elif type_ == 'boolean_array':
+                formatted[k] = [bool(x.strip()) for x in v.split(',')]
+            elif type_ == 'int_array':
+                formatted[k] = [int(x.strip()) for x in v.split(',')]
+            elif type_ == 'float_array':
+                formatted[k] = [float(x.strip()) for x in v.split(',')]
+            elif type_ in ['string_array', 'Directory_array', 'File_array']:
+                formatted[k] = [str(x.strip()) for x in v.split(',')]
             else:
                 formatted[k] = v
+
         return formatted
 
 
