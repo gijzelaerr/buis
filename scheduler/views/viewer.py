@@ -1,15 +1,11 @@
 import logging
-import os
 from collections import namedtuple
-import time
 import magic
 from io import BytesIO
 
 from django.views.generic import DetailView
-from django.http import Http404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
-from django.conf import settings
 
 import matplotlib
 
@@ -72,31 +68,6 @@ DirItem = namedtuple('DirItem', ['fullpath', 'name', 'type', 'size',
                                  'modified', 'is_image'])
 
 
-class OverView(DetailView):
-    model = Workflow
-    template_name = 'viewer/overview.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(OverView, self).get_context_data(**kwargs)
-
-        images = []
-        dirlist = []
-        for result in self.object.results():
-            type_ = filemagic.id_filename(str(result))
-            size = result.stat().st_size
-            modified = time.ctime(os.path.getmtime(result))
-            is_image = type_.startswith('FITS image data') or \
-                       type_.startswith('PNG image data') or \
-                       type_.startswith('JPEG image data')
-            if is_image:
-                images.append(result)
-            dirlist += [DirItem(str(result), result.name, type_, size, modified, is_image)]
-
-        context['dirlist'] = dirlist
-        context['images'] = images
-        return context
-
-
 class SomethingView(DetailView):
     """
     Will redirect to correct view according to file type.
@@ -133,24 +104,6 @@ class SomethingView(DetailView):
         return super(SomethingView, self).render_to_response(context)
 
 
-class RawView(DetailView):
-    model = Workflow
-    template_name = 'viewer/textfile.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        path = self.kwargs['path']
-        fullpath = f"{self.object.outdir()}/{path}"
-
-        with open(fullpath, 'r') as f:
-            context['path'] = path
-            context['content'] = ''.join(f.readlines())
-        return context
-
-    def render_to_response(self, context, **response_kwargs):
-        return HttpResponse(context['content'], content_type='application/xhtml+xml')
-
-
 class TextView(DetailView):
     model = Workflow
     template_name = 'viewer/textfile.html'
@@ -175,7 +128,15 @@ class Js9View(DetailView):
     model = Workflow
     template_name = 'viewer/js9.html'
 
+    def render_to_response(self, context, **response_kwargs):
+        response = super().render_to_response(context, **response_kwargs)
+        response["Access-Control-Allow-Origin"] = "js9.si.edu"
+        response["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+        response["Access-Control-Max-Age"] = "1000"
+        response["Access-Control-Allow-Headers"] = "X-Requested-With, Content-Type"
+        return response
+
     def get_context_data(self, **kwargs):
-        context = super(DetailView, self).get_context_data(**kwargs)
-        context['path'] = self.object.outdir() / self.kwargs['path']
+        context = super().get_context_data(**kwargs)
+        context['path'] = f"{self.object.public_serve()}/outdir/{self.kwargs['path']}"
         return context

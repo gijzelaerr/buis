@@ -71,13 +71,23 @@
             <tr>
                 <td><b>stdout:</b></td>
                 <td>
-                    <pre>{{ object.stdout }}</pre>
+                    <button class="btn btn-info btn-sm" type="button" data-toggle="collapse"
+                            data-target="#collapsestdout"
+                            aria-expanded="false" aria-controls="collapse">
+                        Show
+                    </button>
+                    <pre class="collapse" id="collapsestdout">{{ object.stdout }}</pre>
                 </td>
             </tr>
             <tr>
                 <td><b>stderr:</b></td>
                 <td>
-                    <pre>{{ object.stderr }}</pre>
+                    <button class="btn btn-info btn-sm" type="button" data-toggle="collapse"
+                            data-target="#collapsestderr"
+                            aria-expanded="false" aria-controls="collapse">
+                        Show
+                    </button>
+                    <pre class="collapse" id="collapsestderr">{{ object.stderr }}</pre>
                 </td>
             </tr>
 
@@ -101,12 +111,50 @@
                     <td>{{ result.name }}</td>
                     <td>{{ result.stat.st_size|humanize }}</td>
                     <td><a href="{% url 'scheduler:viewer_guesstype' pk=object.id path=result.name %}">
-                        <button class="btn btn-xs">view</button>
-                    </a></td>
+                        <button class="btn btn-xs btn-info">view</button>
+                    </a>
+                        <button class="btn btn-xs btn-info">download</button>
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
+    </div>
+
+    <h3>Images</h3>
+
+    <div class="panel-body">
+        <div class="row">
+            {% for item in dirlist %}
+                {% if item.is_image %}
+                    <div class="col-xs-6 col-md-4">
+                        <div class="thumbnail">
+                            <img src="{% url 'scheduler:viewer_guesstype' pk=object.id path=item.name|urlencode:"" %}" width="300px">
+                            <div class="caption">
+                                <p>{{ item.name }}</p>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <a href="{% url 'scheduler:viewer_js9' pk=object.id path=item.name %}">
+                                            <button class="btn btn-xs btn-info">JS9</button>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <a href="{% url 'scheduler:viewer_guesstype' pk=object.id path=item.name|urlencode:"" %}">
+                                            <button class="btn  btn-xs btn-info">view</button>
+                                        </a>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <a href="{{ MEDIA_URL }}/{{ object.results_dir }}/{{ item.name }}">
+                                            <button class="btn  btn-xs btn-info">download</button>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
     </div>
 
 

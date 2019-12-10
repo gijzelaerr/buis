@@ -31,8 +31,6 @@ urlpatterns = [
 
     path('<int:pk>/fits/<str:path>/', viewer.FitsView.as_view(), name='viewer_fits'),
     path('<int:pk>/text/<str:path>/', viewer.TextView.as_view(), name='viewer_text'),
-    path('<int:pk>/raw/<str:path>/', viewer.RawView.as_view(), name='viewer_raw'),
-    path('<int:pk>/overview/', viewer.OverView.as_view(), name='viewer_overview'),
     path('something/<int:pk>/<str:path>/', viewer.SomethingView.as_view(), name='viewer_guesstype'),
     path('js9/<int:pk>/<str:path>/', viewer.Js9View.as_view(), name='viewer_js9'),
 

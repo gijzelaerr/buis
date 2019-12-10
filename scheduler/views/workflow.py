@@ -1,8 +1,14 @@
 import json
-import logging
 from pathlib import Path
+import logging
+import os
+import time
+from collections import namedtuple
 
+import matplotlib.pyplot
+import astropy
 from ruamel import yaml
+import magic
 
 from cwl_utils.parser_v1_0 import load_document
 from django.contrib.auth.decorators import login_required
@@ -16,7 +22,10 @@ from scheduler.tasks import run_workflow
 from scheduler.util import list_files, parse_job
 from scheduler.cwl import CwlForm, cwl2dot
 
+matplotlib.use('agg')
+astropy.log.setLevel('ERROR')
 logger = logging.getLogger(__name__)
+filemagic = magic.Magic()  # flags=magic.MAGIC_MIME_TYPE)
 
 
 @login_required
@@ -128,10 +137,29 @@ class WorkflowDelete(LoginRequiredMixin, DeleteView):
         return context
 
 
+DirItem = namedtuple('DirItem', ['fullpath', 'name', 'type', 'size', 'modified', 'is_image'])
+
+
 class WorkflowDetail(LoginRequiredMixin, DetailView):
     model = Workflow
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        images = []
+        dirlist = []
+        for result in self.object.results():
+            type_ = filemagic.id_filename(str(result))
+            size = result.stat().st_size
+            modified = time.ctime(os.path.getmtime(result))
+            is_image = type_.startswith('FITS image data') or \
+                       type_.startswith('PNG image data') or \
+                       type_.startswith('JPEG image data')
+            if is_image:
+                images.append(result)
+            dirlist += [DirItem(str(result), result.name, type_, size, modified, is_image)]
+
         context['menu'] = 'repo'
+        context['dirlist'] = dirlist
+        context['images'] = images
         return context

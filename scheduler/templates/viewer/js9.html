@@ -9,7 +9,7 @@
   <script type="text/javascript" src="http://js9.si.edu/js9/js9plugins.js"></script>
 {% endblock %}
 
-{% block bodyprops %} onload="JS9.Load('{{ MEDIA_URL }}{{ path }}', {zoom: 'toFit', scale:'log'});"{% endblock %}
+{% block bodyprops %} onload="JS9.Load('{{ path }}', {zoom: 'toFit', scale:'log'});"{% endblock %}
 
 {% block content %}
 
