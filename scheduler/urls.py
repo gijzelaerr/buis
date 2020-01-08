@@ -3,9 +3,9 @@ from django.urls import path
 from scheduler.views import repository
 from scheduler.views import workflow
 from scheduler.views import viewer
+from scheduler.views import dataset
 
 app_name = 'scheduler'
-
 
 urlpatterns = [
     path('', repository.RepositoryIndex.as_view(), name='repo_list'),
@@ -19,6 +19,9 @@ urlpatterns = [
     path(r'workflow/detail/<int:pk>/', workflow.WorkflowDetail.as_view(), name='workflow_detail'),
     path(r'workflow/delete/<int:pk>/', workflow.WorkflowDelete.as_view(), name='workflow_delete'),
     path(r'workflow/restart/<int:pk>/', workflow.workflow_restart, name='workflow_restart'),
+
+    path('dataset/list/', dataset.DatasetList.as_view(), name='dataset_list'),
+    path(r'dataset/delete/<int:pk>/', dataset.DatasetDelete.as_view(), name='dataset_delete'),
 
     # intermediate workflow creation steps
     path('workflow/run/<int:repo_id>/<str:cwl_path>/', workflow.workflow_visualize, name='workflow_visualize'),
@@ -34,10 +37,4 @@ urlpatterns = [
     path('something/<int:pk>/<str:path>/', viewer.SomethingView.as_view(), name='viewer_guesstype'),
     path('js9/<int:pk>/<str:path>/', viewer.Js9View.as_view(), name='viewer_js9'),
 
-
-
 ]
-
-
-
-

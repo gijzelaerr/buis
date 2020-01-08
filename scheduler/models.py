@@ -158,3 +158,33 @@ class Workflow(models.Model):
 
     def public_serve(self):
         return f"{settings.MEDIA_URL}/workflow/{self.id}/"
+
+
+class Dataset(models.Model):
+    DIRECTORY = 'DIR'
+    FILE = 'FILE'
+
+    TYPE_CHOICES = (
+        (DIRECTORY, 'Directory'),
+        (FILE, 'File'),
+    )
+
+    path = models.CharField(max_length=400)
+    description = models.CharField(max_length=100)
+    type = models.CharField(max_length=4, choices=TYPE_CHOICES, default=FILE)
+
+    def full_path(self):
+        return pathlib.Path(self.path).absolute()
+
+    def save(self, *args, **kwargs):
+
+        assert self.full_path().exists(), f"{self.full_path()} doest not exist"
+
+        if self.full_path().is_dir():
+            self.type = self.DIRECTORY
+        elif self.full_path().is_file():
+            self.type = self.FILE
+        else:
+            raise IOError("Unknown path type")
+
+        super().save(*args, **kwargs)

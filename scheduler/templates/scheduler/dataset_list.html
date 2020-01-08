@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% load labels %}
+
+{% block content %}
+    <h2>Datasets</h2>
+
+    {% if object_list %}
+        <div class="table-responsive">
+            <table class="table table-striped table-sm">
+                <thead>
+                <th scope="col">id</th>
+
+                <th scope="col">description</th>
+                <th scope="col">path</th>
+                <th scope="col">type</th>
+                <th scope="col">actions</th>
+                </thead>
+                <tbody>
+                {% for object in object_list %}
+                    <tr>
+                        <td>{{ object.id }}</td>
+                        <td>{{ object.description }}</td>
+                        <td>{{ object.path }}</td>
+                        <td>{{ object.type }}</td>
+                        <td>
+                            <a href="{% url 'scheduler:dataset_delete' object.id %}">
+                                <button type="button" class="btn btn-danger">Delete</button>
+                            </a>
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        No Datasets.
+    {% endif %}
+
+{% endblock %}

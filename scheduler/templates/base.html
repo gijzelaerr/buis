@@ -57,12 +57,18 @@
         <li class="nav-item{% if menu == 'repo' %} active{% endif %}">
             <a class="nav-link" href="{% url 'scheduler:repo_list' %}">
                 <i class="fab fa-github"></i>
-                <span>Repositores</span></a>
+                <span>Repositories</span></a>
         </li>
         <li class="nav-item{% if menu == 'workflow' %} active{% endif %}">
             <a class="nav-link" href="{% url 'scheduler:workflow_list' %}">
                 <i class="fas fa-fw fa-table"></i>
                 <span>Workflows</span></a>
+        </li>
+
+            <li class="nav-item{% if menu == 'dataset' %} active{% endif %}">
+            <a class="nav-link" href="{% url 'scheduler:dataset_list' %}">
+                <i class="fas fa-folder"></i>
+                <span>Datasets</span></a>
         </li>
     </ul>
 

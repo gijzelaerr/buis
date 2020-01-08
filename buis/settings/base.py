@@ -91,6 +91,7 @@ STATIC_URL = '/static/'
 
 REPO_DIR = path.join(BASE_DIR, 'scratch/repo/')
 WORKFLOW_DIR = path.join(BASE_DIR, 'scratch/workflow/')
+DATASET_DIR = path.join(BASE_DIR, 'scratch/datasets/')
 
 CELERY_RESULT_BACKEND = 'django-db'
 
