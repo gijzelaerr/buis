@@ -6,7 +6,7 @@ from cwl_utils.parser_v1_0 import InputParameter, InputArraySchema
 from django import forms
 from django.conf import settings
 
-from scheduler.util import list_files2
+from scheduler.models import Dataset
 
 mapping = {
     'null': forms.BooleanField,
@@ -61,8 +61,17 @@ class CwlForm(forms.Form):
             id = input.id.split('#')[-1]
 
             if input.type in ['File', 'Directory']:
-                files = list(list_files2(prefix))
-                params['choices'] = zip(files, files)
+
+                repo_choices = []
+                for i in prefix.rglob('*'):
+                    relative = i.relative_to(prefix)
+                    if not str(relative).startswith('.git'):
+                        if (type_ == "Directory" and relative.is_dir()) or \
+                                (type_ == "File" and relative.is_file()):
+                            repo_choices.append((i, f"repo: {relative}"))
+
+                dataset_choices = [(d.path, f"dataset: {d.description}") for d in Dataset.objects.all()]
+                params['choices'] = dataset_choices + repo_choices
 
             if id in default_values:
                 params['initial'] = default_values[id]
@@ -96,8 +105,6 @@ class CwlForm(forms.Form):
             type_ = self.types[k]
             # Files and directories are a bit more needy so require special formatting
             if type_ in ('Directory', 'File'):
-                if prefix:
-                    v = str(prefix / v)
                 formatted[k] = {'class': type_, 'path': v}
             elif type_ == 'boolean_array':
                 formatted[k] = [bool(x.strip()) for x in v.split(',')]

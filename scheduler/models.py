@@ -173,18 +173,18 @@ class Dataset(models.Model):
     description = models.CharField(max_length=100)
     type = models.CharField(max_length=4, choices=TYPE_CHOICES, default=FILE)
 
-    def full_path(self):
-        return pathlib.Path(self.path).absolute()
-
     def save(self, *args, **kwargs):
 
-        assert self.full_path().exists(), f"{self.full_path()} doest not exist"
+        full_path = pathlib.Path(self.path).absolute()
 
-        if self.full_path().is_dir():
+        assert full_path.exists(), f"{full_path} doest not exist"
+
+        if full_path.is_dir():
             self.type = self.DIRECTORY
-        elif self.full_path().is_file():
+        elif full_path.is_file():
             self.type = self.FILE
         else:
             raise IOError("Unknown path type")
 
+        self.path = full_path
         super().save(*args, **kwargs)

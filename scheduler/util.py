@@ -19,13 +19,6 @@ def list_files(prefix: Path, extensions=None):
                 yield path.join(subfolder, f)
 
 
-# todo: merge this with other list_files
-def list_files2(prefix: Path):
-    for i in prefix.rglob('*'):
-        relative = i.relative_to(prefix)
-        if not str(relative).startswith('.git'):
-            yield relative
-
 
 def parse_job(job: Path, repo: Path):
     with open(str(job)) as f:
