@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from scheduler.models import Dataset
+from pathlib import Path
 
 
 class Command(BaseCommand):
@@ -11,7 +12,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        path = options['path']
+        path = str(Path(options['path']).absolute().resolve())
         description = options['description']
 
         dataset = Dataset(path=path, description=description)
